@@ -1,28 +1,9 @@
-package com.xceptance.xlt.webdav.util;
+package com.xceptance.xlt.webdav.impl;
 
 import com.github.sardine.DavResource;
 import com.github.sardine.Sardine;
-import com.github.sardine.impl.SardineImpl;
-import com.xceptance.common.lang.ReflectionUtils;
 import com.xceptance.xlt.api.actions.AbstractAction;
 import com.xceptance.xlt.api.engine.RequestData;
-import com.xceptance.xlt.api.engine.Session;
-import com.xceptance.xlt.engine.XltDnsResolver;
-import com.xceptance.xlt.engine.util.socket.SocketStatistics;
-import com.xceptance.xlt.engine.util.socket.XltSockets;
-
-import org.apache.http.*;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.entity.BufferedHttpEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.protocol.HttpContext;
-import org.apache.http.protocol.HttpRequestExecutor;
-
-import java.io.IOException;
-import java.net.ProxySelector;
 
 /**
  * Basic webdav action.
@@ -131,94 +112,7 @@ public abstract class AbstractWebDavAction extends AbstractAction
         if (this.sardine == null)
         {
             // Creates configured sardine client
-            this.sardine = new SardineImpl()
-            {
-                protected HttpClientBuilder configure(ProxySelector selector, CredentialsProvider credentials)
-                {
-                    // Let the super class create a configured HttpClientBuilder instance
-                    HttpClientBuilder builder = super.configure(selector, credentials);
-
-                    // Sets a custom request executor which logs the server responses
-                    builder.setRequestExecutor(new HttpRequestExecutor()
-                    {
-                        @Override
-                        public HttpResponse execute(HttpRequest request, HttpClientConnection conn, HttpContext context)
-                            throws IOException, HttpException
-                        {
-
-                            // Only executed while connection is not refused!
-                            try
-                            {
-                                // Initializes socket monitoring and data logging
-                                WebDavContext.getActiveAction().initDataRecord();
-
-                                // Call the execution of the request
-                                HttpResponse response = super.execute(request, conn, context);
-
-                                HttpEntity entity = response.getEntity();
-                                if (entity != null)
-                                {
-                                    response.setEntity(new BufferedHttpEntity(entity));
-                                }
-                                // Logs response code and content type inside the active action
-                                WebDavContext.getActiveAction().setHttpResponseCode(response.getStatusLine().getStatusCode());
-
-                                Header contentTypeHeader = response.getFirstHeader("Content-Type");
-                                if (contentTypeHeader != null)
-                                {
-                                    WebDavContext.getActiveAction().setHttpContentType((contentTypeHeader.getValue().split(";"))[0]);
-                                }
-
-                                return response;
-                            }
-                            catch (IOException | HttpException ex)
-                            {
-                                // Logs exception messages inside the active action
-                                WebDavContext.getActiveAction().setExMessage(ex.getMessage());
-                                throw ex;
-                            }
-                            finally
-                            {
-                                // Finalizes data logging and sends the result to DataManager
-                                WebDavContext.getActiveAction().doDataRecord();
-                            }
-                        }
-                    });
-
-                    // set a custom DNS resolver
-                    builder.setDnsResolver(new XltDnsResolver());
-
-                    return builder;
-                }
-
-                protected <T> T execute(HttpRequestBase request, ResponseHandler<T> responseHandler) throws IOException
-                {
-                    wrapHttpClientIfNeeded();
-                    return super.execute(request, responseHandler);
-                }
-
-                protected HttpResponse execute(HttpRequestBase request) throws IOException
-                {
-                    wrapHttpClientIfNeeded();
-                    return super.execute(request);
-                }
-
-                private void wrapHttpClientIfNeeded()
-                {
-                    CloseableHttpClient client = ReflectionUtils.readInstanceField(this, "client");
-
-                    if (client instanceof CloseableHttpClientWrapper)
-                    {
-                        // already wrapped -> nothing to do
-                    }
-                    else
-                    {
-                        // wrap it
-                        client = new CloseableHttpClientWrapper(client);
-                        ReflectionUtils.writeInstanceField(this, "client", client);
-                    }
-                }
-            };
+            this.sardine = new CustomizedSardineImpl();
         }
 
         // Initialisation of response values
@@ -329,73 +223,6 @@ public abstract class AbstractWebDavAction extends AbstractAction
     public String getUsedPath()
     {
         return this.path;
-    }
-
-    /**
-     * Initializes the socket monitor to get analytic data
-     */
-    protected void initDataRecord()
-    {
-        this.requestData = new RequestData(WebDavContext.getActiveAction().getClass().getSimpleName());
-        XltSockets.getSocketMonitor().reset();
-    }
-
-    /**
-     * Logs all request related data for analytic purpose
-     */
-    protected void doDataRecord()
-    {
-        // Transfers analytic data from socket monitor to request data
-        this.requestData.setRunTime();
-
-        // set path
-        this.requestData.setUrl(this.path);
-
-        // Getting the socket monitor
-        SocketStatistics socketStatistics = XltSockets.getSocketMonitor().getSocketStatistics();
-
-        // setConnectTime
-        this.requestData.setConnectTime(socketStatistics.getConnectTime());
-
-        // setReceiveTime
-        this.requestData.setReceiveTime(socketStatistics.getReceiveTime());
-
-        // setBytesReceived
-        this.requestData.setBytesReceived(socketStatistics.getBytesReceived());
-
-        // setSendTime
-        this.requestData.setSendTime(socketStatistics.getSendTime());
-
-        // setBytesSent
-        this.requestData.setBytesSent(socketStatistics.getBytesSent());
-
-        // setServerBusyTime
-        this.requestData.setServerBusyTime(socketStatistics.getServerBusyTime());
-
-        // setTimeToFirstBytes
-        this.requestData.setTimeToFirstBytes(socketStatistics.getTimeToFirstBytes());
-
-        // setTimeToLastBytes
-        this.requestData.setTimeToLastBytes(socketStatistics.getTimeToLastBytes());
-
-        // setHttpResponseCode
-        this.requestData.setResponseCode(this.httpResponseCode);
-
-        // setHttpContentType
-        this.requestData.setContentType(this.httpContentType);
-
-        // setFailed
-        if (!this.exMessage.equals("") || this.httpResponseCode == 0 || this.httpResponseCode >= 500)
-        {
-            // set failed
-            this.requestData.setFailed(true);
-            // log event
-            if (!exMessage.equals(""))
-                Session.getCurrent().getDataManager().logEvent("Exception", this.exMessage);
-        }
-
-        // Log data object
-        Session.getCurrent().getDataManager().logDataRecord(this.requestData);
     }
 
     /**

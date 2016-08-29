@@ -2,7 +2,7 @@ package com.xceptance.xlt.webdav.validators.pre_validators;
 
 import org.junit.Assert;
 
-import com.xceptance.xlt.webdav.util.AbstractWebDavAction;
+import com.xceptance.xlt.webdav.impl.AbstractWebDavAction;
 
 /**
  * Basic prevalidator for all DavResource based actions Prevents usage of a null reference as a resource parameter and

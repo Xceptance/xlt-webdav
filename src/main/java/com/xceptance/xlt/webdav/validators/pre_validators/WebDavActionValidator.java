@@ -4,7 +4,7 @@ import org.junit.Assert;
 
 import com.xceptance.xlt.webdav.actions.CheckResourcePath;
 import com.xceptance.xlt.webdav.actions.ListResources;
-import com.xceptance.xlt.webdav.util.AbstractWebDavAction;
+import com.xceptance.xlt.webdav.impl.AbstractWebDavAction;
 
 /**
  * Basic prevalidator for all webdav based actions Validates the existence of a client, host name settings, well

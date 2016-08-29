@@ -1,4 +1,4 @@
-package com.xceptance.xlt.webdav.util;
+package com.xceptance.xlt.webdav.impl;
 
 import com.xceptance.xlt.api.engine.Session;
 

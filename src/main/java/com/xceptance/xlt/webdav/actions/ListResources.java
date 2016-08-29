@@ -1,7 +1,7 @@
 package com.xceptance.xlt.webdav.actions;
 
 import com.github.sardine.DavResource;
-import com.xceptance.xlt.webdav.util.AbstractWebDavAction;
+import com.xceptance.xlt.webdav.impl.AbstractWebDavAction;
 import com.xceptance.xlt.webdav.util.PathBuilder;
 import com.xceptance.xlt.webdav.validators.post_validators.ResponseCodeValidator;
 import com.xceptance.xlt.webdav.validators.pre_validators.SourceDavResourceValidator;
