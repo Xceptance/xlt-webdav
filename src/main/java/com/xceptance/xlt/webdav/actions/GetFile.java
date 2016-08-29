@@ -2,11 +2,11 @@ package com.xceptance.xlt.webdav.actions;
 
 import com.amazonaws.util.IOUtils;
 import com.github.sardine.DavResource;
-import com.xceptance.xlt.webdav.util.AbstractWebdavAction;
+import com.xceptance.xlt.webdav.util.AbstractWebDavAction;
 import com.xceptance.xlt.webdav.util.PathBuilder;
 import com.xceptance.xlt.webdav.validators.post_validators.ResponseCodeValidator;
-import com.xceptance.xlt.webdav.validators.pre_validators.ResourceSRCValidator;
-import com.xceptance.xlt.webdav.validators.pre_validators.WebdavActionValidator;
+import com.xceptance.xlt.webdav.validators.pre_validators.SourceDavResourceValidator;
+import com.xceptance.xlt.webdav.validators.pre_validators.WebDavActionValidator;
 
 import org.junit.Assert;
 
@@ -20,7 +20,7 @@ import java.io.InputStream;
  *
  * @author Karsten Sommer (Xceptance Software Technologies GmbH)
  */
-public class GetFile extends AbstractWebdavAction
+public class GetFile extends AbstractWebDavAction
 {
     // File (available after performed action if flag is set)
     private byte[] file;
@@ -155,8 +155,8 @@ public class GetFile extends AbstractWebdavAction
     @Override
     public void preValidate() throws Exception
     {
-        WebdavActionValidator.getInstance().validate(this);
-        ResourceSRCValidator.getInstance().validate(this);
+        WebDavActionValidator.getInstance().validate(this);
+        SourceDavResourceValidator.getInstance().validate(this);
 
         // Verify: Resource is a file
         if (this.davResourceUsage)

@@ -3,11 +3,11 @@ package com.xceptance.xlt.webdav.actions;
 import org.junit.Assert;
 
 import com.github.sardine.DavResource;
-import com.xceptance.xlt.webdav.util.AbstractWebdavAction;
+import com.xceptance.xlt.webdav.util.AbstractWebDavAction;
 import com.xceptance.xlt.webdav.util.PathBuilder;
 import com.xceptance.xlt.webdav.validators.post_validators.ResponseCodeValidator;
-import com.xceptance.xlt.webdav.validators.pre_validators.ResourceSRCValidator;
-import com.xceptance.xlt.webdav.validators.pre_validators.WebdavActionValidator;
+import com.xceptance.xlt.webdav.validators.pre_validators.SourceDavResourceValidator;
+import com.xceptance.xlt.webdav.validators.pre_validators.WebDavActionValidator;
 
 /**
  * Checks if a resources path exists by using WebDAV <code>HEAD</code> by sardine.exists. Can be used by relative path
@@ -15,7 +15,7 @@ import com.xceptance.xlt.webdav.validators.pre_validators.WebdavActionValidator;
  *
  * @author Karsten Sommer (Xceptance Software Technologies GmbH)
  */
-public class CheckResourcePath extends AbstractWebdavAction
+public class CheckResourcePath extends AbstractWebDavAction
 {
     // Expectation of resources existence
     private boolean expectation;
@@ -156,8 +156,8 @@ public class CheckResourcePath extends AbstractWebdavAction
     @Override
     public void preValidate() throws Exception
     {
-        WebdavActionValidator.getInstance().validate(this);
-        ResourceSRCValidator.getInstance().validate(this);
+        WebDavActionValidator.getInstance().validate(this);
+        SourceDavResourceValidator.getInstance().validate(this);
     }
 
     @Override

@@ -69,7 +69,7 @@ public class CloseableHttpClientWrapper extends CloseableHttpClient
      */
     protected CloseableHttpResponse doExecute(HttpHost target, HttpRequest request, HttpContext context) throws IOException
     {
-        WebdavContext.getActiveAction().initDataRecord();
+        WebDavContext.getActiveAction().initDataRecord();
 
         try
         {
@@ -78,12 +78,12 @@ public class CloseableHttpClientWrapper extends CloseableHttpClient
         catch (IOException ex)
         {
             // log event
-            WebdavContext.getActiveAction().setExMessage(ex.getMessage());
+            WebDavContext.getActiveAction().setExMessage(ex.getMessage());
             throw ex;
         }
         finally
         {
-            WebdavContext.getActiveAction().doDataRecord();
+            WebDavContext.getActiveAction().doDataRecord();
         }
     }
 

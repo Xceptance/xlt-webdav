@@ -1,11 +1,11 @@
 package com.xceptance.xlt.webdav.actions;
 
 import com.github.sardine.DavResource;
-import com.xceptance.xlt.webdav.util.AbstractWebdavAction;
+import com.xceptance.xlt.webdav.util.AbstractWebDavAction;
 import com.xceptance.xlt.webdav.util.PathBuilder;
 import com.xceptance.xlt.webdav.validators.post_validators.ResponseCodeValidator;
-import com.xceptance.xlt.webdav.validators.pre_validators.ResourceSRCValidator;
-import com.xceptance.xlt.webdav.validators.pre_validators.WebdavActionValidator;
+import com.xceptance.xlt.webdav.validators.pre_validators.SourceDavResourceValidator;
+import com.xceptance.xlt.webdav.validators.pre_validators.WebDavActionValidator;
 
 /**
  * Deletes a resource by using WebDAV <code>DELETE</code> by sardine.delete. Can be used by relative path or by a
@@ -13,7 +13,7 @@ import com.xceptance.xlt.webdav.validators.pre_validators.WebdavActionValidator;
  *
  * @author Karsten Sommer (Xceptance Software Technologies GmbH)
  */
-public class DeleteResource extends AbstractWebdavAction
+public class DeleteResource extends AbstractWebDavAction
 {
     /**
      * Action with standard action name listed in the results, based on a path
@@ -127,8 +127,8 @@ public class DeleteResource extends AbstractWebdavAction
     @Override
     public void preValidate() throws Exception
     {
-        WebdavActionValidator.getInstance().validate(this);
-        ResourceSRCValidator.getInstance().validate(this);
+        WebDavActionValidator.getInstance().validate(this);
+        SourceDavResourceValidator.getInstance().validate(this);
     }
 
     @Override

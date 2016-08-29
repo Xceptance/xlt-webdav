@@ -2,10 +2,10 @@ package com.xceptance.xlt.webdav.actions;
 
 import org.junit.Assert;
 
-import com.xceptance.xlt.webdav.util.AbstractWebdavAction;
+import com.xceptance.xlt.webdav.util.AbstractWebDavAction;
 import com.xceptance.xlt.webdav.util.PathBuilder;
 import com.xceptance.xlt.webdav.validators.post_validators.ResponseCodeValidator;
-import com.xceptance.xlt.webdav.validators.pre_validators.WebdavActionValidator;
+import com.xceptance.xlt.webdav.validators.pre_validators.WebDavActionValidator;
 
 import java.io.InputStream;
 
@@ -13,7 +13,7 @@ import java.io.InputStream;
  * Puts a given file to a destination by using WebDAV <code>PUT</code> by sardine.put. Can be used by relative path
  * which describes the destination an a byteArray or InputStream as source file.
  */
-public class PutFile extends AbstractWebdavAction
+public class PutFile extends AbstractWebDavAction
 {
     // File data to perform upload
     private byte[] fileByBytes;
@@ -112,7 +112,7 @@ public class PutFile extends AbstractWebdavAction
     @Override
     public void preValidate() throws Exception
     {
-        WebdavActionValidator.getInstance().validate(this);
+        WebDavActionValidator.getInstance().validate(this);
 
         // Verify: Data to perform upload is given
         Assert.assertFalse("No content to perform upload", this.fileByBytes == null && this.fileByInputStream == null);

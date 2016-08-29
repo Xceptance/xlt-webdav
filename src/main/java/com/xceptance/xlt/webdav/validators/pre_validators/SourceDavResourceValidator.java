@@ -2,7 +2,7 @@ package com.xceptance.xlt.webdav.validators.pre_validators;
 
 import org.junit.Assert;
 
-import com.xceptance.xlt.webdav.util.AbstractWebdavAction;
+import com.xceptance.xlt.webdav.util.AbstractWebDavAction;
 
 /**
  * Basic prevalidator for all DavResource based actions Prevents usage of a null reference as a resource parameter and
@@ -10,17 +10,17 @@ import com.xceptance.xlt.webdav.util.AbstractWebdavAction;
  *
  * @author Karsten Sommer (Xceptance Software Technologies GmbH)
  */
-public class ResourceSRCValidator
+public class SourceDavResourceValidator
 {
     /**
      * Provides a singleton validator
      */
-    private static final ResourceSRCValidator instance = new ResourceSRCValidator();
+    private static final SourceDavResourceValidator instance = new SourceDavResourceValidator();
 
     /**
      * @return Instance of this validator
      */
-    public static ResourceSRCValidator getInstance()
+    public static SourceDavResourceValidator getInstance()
     {
         return instance;
     }
@@ -33,7 +33,7 @@ public class ResourceSRCValidator
      * @throws Exception
      *             Assertion failure
      */
-    public void validate(AbstractWebdavAction activeAction) throws Exception
+    public void validate(AbstractWebDavAction activeAction) throws Exception
     {
         // Verify: DavResource is NOT NULL if it is used
         Assert.assertFalse("You are going to copy a resource by a NULL referenced DavResource", activeAction.getDavResourceUsage()

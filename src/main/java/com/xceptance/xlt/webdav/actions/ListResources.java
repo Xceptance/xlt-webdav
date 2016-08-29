@@ -1,11 +1,11 @@
 package com.xceptance.xlt.webdav.actions;
 
 import com.github.sardine.DavResource;
-import com.xceptance.xlt.webdav.util.AbstractWebdavAction;
+import com.xceptance.xlt.webdav.util.AbstractWebDavAction;
 import com.xceptance.xlt.webdav.util.PathBuilder;
 import com.xceptance.xlt.webdav.validators.post_validators.ResponseCodeValidator;
-import com.xceptance.xlt.webdav.validators.pre_validators.ResourceSRCValidator;
-import com.xceptance.xlt.webdav.validators.pre_validators.WebdavActionValidator;
+import com.xceptance.xlt.webdav.validators.pre_validators.SourceDavResourceValidator;
+import com.xceptance.xlt.webdav.validators.pre_validators.WebDavActionValidator;
 
 import org.junit.Assert;
 
@@ -20,7 +20,7 @@ import java.util.List;
  *
  * @author Karsten Sommer (Xceptance Software Technologies GmbH)
  */
-public class ListResources extends AbstractWebdavAction
+public class ListResources extends AbstractWebDavAction
 {
     // Search depth at the destination path
     private int depth;
@@ -157,8 +157,8 @@ public class ListResources extends AbstractWebdavAction
     @Override
     public void preValidate() throws Exception
     {
-        WebdavActionValidator.getInstance().validate(this);
-        ResourceSRCValidator.getInstance().validate(this);
+        WebDavActionValidator.getInstance().validate(this);
+        SourceDavResourceValidator.getInstance().validate(this);
 
         // Verify: Valid depth
         Assert.assertTrue("You are going to use an invalid depth of " + this.depth + ". It must be >= -1", this.depth >= -1);

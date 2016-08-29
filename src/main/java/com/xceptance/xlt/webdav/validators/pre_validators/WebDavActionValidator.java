@@ -4,7 +4,7 @@ import org.junit.Assert;
 
 import com.xceptance.xlt.webdav.actions.CheckResourcePath;
 import com.xceptance.xlt.webdav.actions.ListResources;
-import com.xceptance.xlt.webdav.util.AbstractWebdavAction;
+import com.xceptance.xlt.webdav.util.AbstractWebDavAction;
 
 /**
  * Basic prevalidator for all webdav based actions Validates the existence of a client, host name settings, well
@@ -12,17 +12,17 @@ import com.xceptance.xlt.webdav.util.AbstractWebdavAction;
  *
  * @author Karsten Sommer (Xceptance Software Technologies GmbH)
  */
-public class WebdavActionValidator
+public class WebDavActionValidator
 {
     /**
      * Provides a singleton validator
      */
-    private static final WebdavActionValidator instance = new WebdavActionValidator();
+    private static final WebDavActionValidator instance = new WebDavActionValidator();
 
     /**
      * @return Instance of this validator
      */
-    public static WebdavActionValidator getInstance()
+    public static WebDavActionValidator getInstance()
     {
         return instance;
     }
@@ -35,7 +35,7 @@ public class WebdavActionValidator
      * @throws Exception
      *             Assertion failure
      */
-    public void validate(AbstractWebdavAction activeAction) throws Exception
+    public void validate(AbstractWebDavAction activeAction) throws Exception
     {
         // Verify: Host name
         Assert.assertFalse("Host name must not be NULL", activeAction.getHostName() == null);

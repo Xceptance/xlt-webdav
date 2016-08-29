@@ -12,10 +12,10 @@ import java.util.Map;
  *
  * @author @author Karsten Sommer (Xceptance Software Technologies GmbH)
  */
-public abstract class WebdavContext
+public abstract class WebDavContext
 {
     // UserID related storage for your action to be performed <String UserID, AbstractWebdavAction activeAction>
-    private static Map<String, AbstractWebdavAction> activeActions = new HashMap<String, AbstractWebdavAction>();
+    private static Map<String, AbstractWebDavAction> activeActions = new HashMap<String, AbstractWebDavAction>();
 
     /**
      * Returns last created action related to session userID Called implicit by AbstractWebdavAction's constructor to
@@ -23,9 +23,9 @@ public abstract class WebdavContext
      *
      * @return Current WebdavAction related to userID
      */
-    public static AbstractWebdavAction getActiveAction()
+    public static AbstractWebDavAction getActiveAction()
     {
-        return WebdavContext.activeActions.get(Session.getCurrent().getUserID());
+        return WebDavContext.activeActions.get(Session.getCurrent().getUserID());
     }
 
     /**
@@ -35,9 +35,9 @@ public abstract class WebdavContext
      * @param activeAction
      *            current WebdavAction which is getting to be performed
      */
-    public static void setActiveAction(AbstractWebdavAction activeAction)
+    public static void setActiveAction(AbstractWebDavAction activeAction)
     {
-        WebdavContext.activeActions.put(Session.getCurrent().getUserID(), activeAction);
+        WebDavContext.activeActions.put(Session.getCurrent().getUserID(), activeAction);
     }
 
     /**
@@ -46,8 +46,8 @@ public abstract class WebdavContext
      */
     public static void clean()
     {
-        WebdavContext.activeActions.get(Session.getCurrent().getUserID()).releaseClient();
-        WebdavContext.activeActions.put(Session.getCurrent().getUserID(), null);
+        WebDavContext.activeActions.get(Session.getCurrent().getUserID()).releaseClient();
+        WebDavContext.activeActions.put(Session.getCurrent().getUserID(), null);
     }
 
     /**
@@ -58,7 +58,7 @@ public abstract class WebdavContext
      */
     public static void setHostName(String hostName)
     {
-        WebdavContext.activeActions.get(Session.getCurrent().getUserID()).setHostName(hostName);
+        WebDavContext.activeActions.get(Session.getCurrent().getUserID()).setHostName(hostName);
     }
 
     /**
@@ -70,7 +70,7 @@ public abstract class WebdavContext
      */
     public static void setWebdavDir(String webdavDir)
     {
-        WebdavContext.activeActions.get(Session.getCurrent().getUserID()).setWebdavDir(webdavDir);
+        WebDavContext.activeActions.get(Session.getCurrent().getUserID()).setWebdavDir(webdavDir);
     }
 
     /**
@@ -83,6 +83,6 @@ public abstract class WebdavContext
      */
     public static void setCredentials(String userName, String userPassword)
     {
-        WebdavContext.activeActions.get(Session.getCurrent().getUserID()).setCredentials(userName, userPassword);
+        WebDavContext.activeActions.get(Session.getCurrent().getUserID()).setCredentials(userName, userPassword);
     }
 }

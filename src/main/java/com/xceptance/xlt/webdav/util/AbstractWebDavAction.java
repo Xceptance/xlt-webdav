@@ -29,7 +29,7 @@ import java.net.ProxySelector;
  *
  * @author Karsten Sommer (Xceptance Software Technologies GmbH)
  */
-public abstract class AbstractWebdavAction extends AbstractAction
+public abstract class AbstractWebDavAction extends AbstractAction
 {
     // Sardine client returned by SardineFactory
     protected Sardine sardine;
@@ -72,19 +72,19 @@ public abstract class AbstractWebdavAction extends AbstractAction
     protected RequestData requestData;
 
     // Previous performed action
-    protected AbstractWebdavAction previousWebdavAction;
+    protected AbstractWebDavAction previousWebdavAction;
 
     /**
      * Basic constructor for actions without specific named results
      */
-    public AbstractWebdavAction()
+    public AbstractWebDavAction()
     {
-        super(WebdavContext.getActiveAction(), null);
+        super(WebDavContext.getActiveAction(), null);
 
         // redundant initialisation tasks
         this.initialisation();
 
-        WebdavContext.setActiveAction(this);
+        WebDavContext.setActiveAction(this);
     }
 
     /**
@@ -93,14 +93,14 @@ public abstract class AbstractWebdavAction extends AbstractAction
      * @param timerName
      *            Name which should be used for this action in results
      */
-    public AbstractWebdavAction(String timerName)
+    public AbstractWebDavAction(String timerName)
     {
-        super(WebdavContext.getActiveAction(), timerName);
+        super(WebDavContext.getActiveAction(), timerName);
 
         // redundant initialisation tasks
         this.initialisation();
 
-        WebdavContext.setActiveAction(this);
+        WebDavContext.setActiveAction(this);
     }
 
     /**
@@ -109,7 +109,7 @@ public abstract class AbstractWebdavAction extends AbstractAction
     private void initialisation()
     {
         // Set previously performed action if exists, otherwise NULL
-        this.previousWebdavAction = WebdavContext.getActiveAction();
+        this.previousWebdavAction = WebDavContext.getActiveAction();
 
         // Assume information from previous action
         if (this.previousWebdavAction != null)
@@ -150,7 +150,7 @@ public abstract class AbstractWebdavAction extends AbstractAction
                             try
                             {
                                 // Initializes socket monitoring and data logging
-                                WebdavContext.getActiveAction().initDataRecord();
+                                WebDavContext.getActiveAction().initDataRecord();
 
                                 // Call the execution of the request
                                 HttpResponse response = super.execute(request, conn, context);
@@ -161,12 +161,12 @@ public abstract class AbstractWebdavAction extends AbstractAction
                                     response.setEntity(new BufferedHttpEntity(entity));
                                 }
                                 // Logs response code and content type inside the active action
-                                WebdavContext.getActiveAction().setHttpResponseCode(response.getStatusLine().getStatusCode());
+                                WebDavContext.getActiveAction().setHttpResponseCode(response.getStatusLine().getStatusCode());
 
                                 Header contentTypeHeader = response.getFirstHeader("Content-Type");
                                 if (contentTypeHeader != null)
                                 {
-                                    WebdavContext.getActiveAction().setHttpContentType((contentTypeHeader.getValue().split(";"))[0]);
+                                    WebDavContext.getActiveAction().setHttpContentType((contentTypeHeader.getValue().split(";"))[0]);
                                 }
 
                                 return response;
@@ -174,13 +174,13 @@ public abstract class AbstractWebdavAction extends AbstractAction
                             catch (IOException | HttpException ex)
                             {
                                 // Logs exception messages inside the active action
-                                WebdavContext.getActiveAction().setExMessage(ex.getMessage());
+                                WebDavContext.getActiveAction().setExMessage(ex.getMessage());
                                 throw ex;
                             }
                             finally
                             {
                                 // Finalizes data logging and sends the result to DataManager
-                                WebdavContext.getActiveAction().doDataRecord();
+                                WebDavContext.getActiveAction().doDataRecord();
                             }
                         }
                     });
@@ -230,7 +230,7 @@ public abstract class AbstractWebdavAction extends AbstractAction
     /**
      * @return Previously performed action
      */
-    public AbstractWebdavAction getPreviousAction()
+    public AbstractWebDavAction getPreviousAction()
     {
         return this.previousWebdavAction;
     }
@@ -336,7 +336,7 @@ public abstract class AbstractWebdavAction extends AbstractAction
      */
     protected void initDataRecord()
     {
-        this.requestData = new RequestData(WebdavContext.getActiveAction().getClass().getSimpleName());
+        this.requestData = new RequestData(WebDavContext.getActiveAction().getClass().getSimpleName());
         XltSockets.getSocketMonitor().reset();
     }
 
