@@ -1,6 +1,7 @@
-package com.xceptance.xlt.webdav.impl;
+package com.xceptance.xlt.webdav.util;
 
 import com.xceptance.xlt.api.engine.Session;
+import com.xceptance.xlt.webdav.impl.AbstractWebDavAction;
 
 import java.util.HashMap;
 import java.util.Map;

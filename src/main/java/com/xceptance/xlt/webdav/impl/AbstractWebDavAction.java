@@ -4,6 +4,7 @@ import com.github.sardine.DavResource;
 import com.github.sardine.Sardine;
 import com.xceptance.xlt.api.actions.AbstractAction;
 import com.xceptance.xlt.api.engine.RequestData;
+import com.xceptance.xlt.webdav.util.WebDavContext;
 
 /**
  * Basic webdav action.

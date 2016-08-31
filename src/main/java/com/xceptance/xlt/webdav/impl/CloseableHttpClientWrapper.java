@@ -20,6 +20,7 @@ import com.xceptance.xlt.api.engine.RequestData;
 import com.xceptance.xlt.api.engine.Session;
 import com.xceptance.xlt.engine.util.socket.SocketStatistics;
 import com.xceptance.xlt.engine.util.socket.XltSockets;
+import com.xceptance.xlt.webdav.util.WebDavContext;
 
 /**
  * A wrapper around a {@link CloseableHttpClient} object that delegates all method calls to the wrapped object, but
