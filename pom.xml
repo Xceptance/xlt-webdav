@@ -3,19 +3,20 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
+
     <groupId>com.xceptance</groupId>
     <artifactId>xlt-webdav</artifactId>
+    <version>0.0.1</version>
 
     <name>xlt-webdav</name>
     <description>A framework based on XLT to test WebDAV servers.</description>
     <url>https://github.com/Xceptance/xlt-webdav</url>
     <organization>
         <name>Xceptance Software Technologies</name>
-        <url>https://www.xceptance.com/en/</url>
+        <url>https://www.xceptance.com/</url>
     </organization>
 
     <packaging>jar</packaging>
-    <version>0.0.1</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -32,6 +33,19 @@
                     <source>${java.version}</source>
                     <target>${java.version}</target>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.0.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
@@ -55,4 +69,5 @@
             <version>5.7</version>
         </dependency>
     </dependencies>
+
 </project>
