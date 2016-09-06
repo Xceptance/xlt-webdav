@@ -136,7 +136,7 @@ public class GetFile extends AbstractWebDavAction
         if (!this.relativePath.equals(""))
         {
             // Extract relative path from resource path
-            this.relativePath = this.relativePath.substring(this.webdavDir.length() + 1, this.relativePath.length());
+            this.relativePath = this.relativePath.substring(this.webdavDir.length());
         }
 
         // Redundant initialisation tasks
