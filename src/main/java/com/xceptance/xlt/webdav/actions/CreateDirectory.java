@@ -7,8 +7,8 @@ import com.xceptance.xlt.webdav.validators.pre_validators.WebDavActionValidator;
 
 /**
  * Creates a directory at a destination by using WebDAV <code>MKCOL</code> by sardine.createDirectory. Can be used by
- * relative path on an existing directory. Ensure the parent directory exists, otherwise this operatiob throws
- * SardineException with HTTP 409!
+ * relative path on an existing directory. Ensure the parent directory exists, otherwise this operation throws a
+ * SardineException HTTP 409!
  *
  * @author Karsten Sommer (Xceptance Software Technologies GmbH)
  */
@@ -24,7 +24,7 @@ public class CreateDirectory extends AbstractWebDavAction
     {
         super();
 
-        // Redundant initialisation tasks
+        // Redundant initialization tasks
         this.initialize(relativePath);
     }
 
@@ -40,7 +40,7 @@ public class CreateDirectory extends AbstractWebDavAction
     {
         super(timerName);
 
-        // Redundant initialisation tasks
+        // Redundant initialization tasks
         this.initialize(relativePath);
     }
 
@@ -52,7 +52,7 @@ public class CreateDirectory extends AbstractWebDavAction
      */
     private void initialize(String relativePath)
     {
-        // Initialisation to avoid NullPointerException and mismatching
+        // Initialization to avoid NullPointerException and mismatching
         this.relativePath = (relativePath == null) ? "" : relativePath;
 
         // Build full path
