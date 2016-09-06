@@ -1,9 +1,10 @@
 package com.xceptance.xlt.webdav.validators.post_validators;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.junit.Assert;
 
 /**
- * Validator to postvalidate http response codes with expectations
+ * Validator to validate HTTP response codes with expectations
  *
  * @author Karsten Sommer (Xceptance Software Technologies GmbH)
  */
@@ -23,39 +24,19 @@ public class ResponseCodeValidator
     }
 
     /**
-     * Validates responded code against single expectation
+     * Validates that the passed actual response code is one of the given expected response codes.
      *
-     * @param httpResponseCode
-     *            Responded code by your action
-     * @param httpResponseCodeExpectation
-     *            Expected code of your action
-     * @throws Exception
-     *             Assertion failure
+     * @param actualResponseCode
+     *            the response code of your action
+     * @param expectedResponseCodes
+     *            one or more valid HTTP response codes
+     * @throws AssertionError
+     *             if validation fails
      */
-    public void validate(int httpResponseCode, Integer httpResponseCodeExpectation) throws Exception
+    public void validate(int actualResponseCode, int... expectedResponseCodes) throws Exception
     {
-        Assert.assertTrue("Respond of your request in not as expected. Server responds HTTP(" + httpResponseCode + ").",
-                          httpResponseCode == httpResponseCodeExpectation);
-    }
-
-    /**
-     * Validates responded code against multiple expectations
-     *
-     * @param httpResponseCode
-     *            Responded code of your action
-     * @param httpResponseCodeExpectation
-     *            Multiple int values of valid http response codes for validation purpose
-     * @throws Exception
-     *             Assertion failure
-     */
-    public void validate(int httpResponseCode, int... httpResponseCodeExpectation) throws Exception
-    {
-        boolean isValid = false;
-        for (int singleExpectation : httpResponseCodeExpectation)
-        {
-            if (httpResponseCode == singleExpectation)
-                isValid = true;
-        }
-        Assert.assertTrue("Respond of your request is not as expected. Server responds HTTP(" + httpResponseCode + ").", isValid);
+        Assert.assertTrue("Unexpected response code: " + actualResponseCode + " is not one of "
+                              + ArrayUtils.toString(expectedResponseCodes),
+                          ArrayUtils.contains(expectedResponseCodes, actualResponseCode));
     }
 }
