@@ -1,11 +1,11 @@
-package com.xceptance.xlt.webdav.validators.pre_validators;
+package com.xceptance.xlt.webdav.validators;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 
 import com.xceptance.xlt.webdav.actions.CheckResourcePath;
 import com.xceptance.xlt.webdav.actions.ListResources;
-import com.xceptance.xlt.webdav.impl.AbstractWebDavAction;
+import com.xceptance.xlt.webdav.impl.AbstractWebDAVAction;
 
 /**
  * Basic prevalidator for all webDAV actions. Validates the existence of a Sardine client, host name settings, proper
@@ -36,7 +36,7 @@ public class WebDavActionValidator
      * @throws Exception
      *             Assertion failure
      */
-    public void validate(AbstractWebDavAction activeAction) throws Exception
+    public void validate(AbstractWebDAVAction activeAction) throws Exception
     {
         // Verify: Host name is not blank
         Assert.assertTrue("Host name must not be blank", StringUtils.isNotBlank(activeAction.getHostName()));
@@ -56,6 +56,6 @@ public class WebDavActionValidator
         }
 
         // Verify: Path is not blank
-        Assert.assertTrue("Absolute path must not be blank", StringUtils.isNotBlank(activeAction.getUsedPath()));
+        Assert.assertTrue("Absolute path must not be blank", StringUtils.isNotBlank(activeAction.getAbsoluteURL()));
     }
 }

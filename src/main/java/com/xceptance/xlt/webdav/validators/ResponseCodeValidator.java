@@ -1,4 +1,4 @@
-package com.xceptance.xlt.webdav.validators.post_validators;
+package com.xceptance.xlt.webdav.validators;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.junit.Assert;
