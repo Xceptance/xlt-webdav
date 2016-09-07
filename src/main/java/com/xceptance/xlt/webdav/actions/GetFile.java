@@ -1,16 +1,14 @@
 package com.xceptance.xlt.webdav.actions;
 
-import com.amazonaws.util.IOUtils;
-import com.github.sardine.DavResource;
-import com.xceptance.xlt.webdav.impl.AbstractWebDavAction;
-import com.xceptance.xlt.webdav.util.PathBuilder;
-import com.xceptance.xlt.webdav.validators.post_validators.ResponseCodeValidator;
-import com.xceptance.xlt.webdav.validators.pre_validators.SourceDavResourceValidator;
-import com.xceptance.xlt.webdav.validators.pre_validators.WebDavActionValidator;
-
-import org.junit.Assert;
-
 import java.io.InputStream;
+
+import org.apache.commons.io.IOUtils;
+
+import com.github.sardine.DavResource;
+import com.xceptance.xlt.webdav.impl.AbstractWebDAVAction;
+import com.xceptance.xlt.webdav.validators.ResponseCodeValidator;
+import com.xceptance.xlt.webdav.validators.SourceDavResourceValidator;
+import com.xceptance.xlt.webdav.validators.WebDavActionValidator;
 
 /**
  * Gets a file by using WebDAV <code>GET</code> by sardine.get. Can be used by relative path or by a resource object
@@ -20,29 +18,30 @@ import java.io.InputStream;
  *
  * @author Karsten Sommer (Xceptance Software Technologies GmbH)
  */
-public class GetFile extends AbstractWebDavAction
+public class GetFile extends AbstractWebDAVAction
 {
-    // File (available after performed action if flag is set)
-    private byte[] file;
+	// the path to fetch
+	private final String path;
+	
+	// File (available after performed action if flag is set)
+    private byte[] fileContent;
 
-    private boolean storageFlag;
-
+    // do we want to preserve the file content?
+    private final boolean store;
+    
     /**
      * Action with standard action name listed in the results, based on a path
      *
-     * @param relativePath
+     * @param path
      *            Files relative source path related to your webdav directory
-     * @param storageFlag
-     *            Flag to hold result file in local memory (you have to release it manually)
+     * @param store
+     * 				do we want to store the fetched content, true if yes, false otherwise 
      */
-    public GetFile(String relativePath, boolean storageFlag)
+    public GetFile(final String path, final boolean store)
     {
         super();
-
-        this.storageFlag = storageFlag;
-
-        // Redundant initialisation tasks
-        this.initializePath(relativePath);
+        this.path = getAbsoluteURL(path);
+        this.store = store;
     }
 
     /**
@@ -50,37 +49,31 @@ public class GetFile extends AbstractWebDavAction
      *
      * @param timerName
      *            Is used for naming this action in results
-     * @param relativePath
+     * @param path
      *            Files relative source path related to your webdav directory
-     * @param storageFlag
-     *            Flag to hold result file in local memory (you have to release it manually)
+     * @param store
+     * 				do we want to store the fetched content, true if yes, false otherwise 
      */
-    public GetFile(String timerName, String relativePath, boolean storageFlag)
+    public GetFile(final String timerName, final String path, final boolean store)
     {
         super(timerName);
-
-        this.storageFlag = storageFlag;
-
-        // Redundant initialisation tasks
-        this.initializePath(relativePath);
+        this.path = getAbsoluteURL(path);
+        this.store = store;
     }
 
     /**
      * Action with standard action name listed in the results, based on a resource object
      *
-     * @param resourceSRC
+     * @param src
      *            Source DavResource object to perform this action
-     * @param storageFlag
-     *            Flag to hold result file in local memory (you have to release it manually)
+     * @param store
+     * 				do we want to store the fetched content, true if yes, false otherwise 
      */
-    public GetFile(DavResource resourceSRC, boolean storageFlag)
+    public GetFile(final DavResource src, final boolean store)
     {
         super();
-
-        this.storageFlag = storageFlag;
-
-        // Redundant initialisation tasks
-        this.initializeResource(resourceSRC);
+        this.path = src.getHref().toString();
+        this.store = store;
     }
 
     /**
@@ -90,91 +83,42 @@ public class GetFile extends AbstractWebDavAction
      *            Is used for naming this action in results
      * @param resourceSRC
      *            Source DavResource object to perform this action
-     * @param storageFlag
-     *            Flag to hold result file in local memory (you have to release it manually)
+     * @param store
+     * 				do we want to store the fetched content, true if yes, false otherwise 
      */
-    public GetFile(String timerName, DavResource resourceSRC, boolean storageFlag)
+    public GetFile(final String timerName, final DavResource src, final boolean store)
     {
         super(timerName);
-
-        this.storageFlag = storageFlag;
-
-        // Redundant initialisation tasks
-        this.initializeResource(resourceSRC);
-    }
-
-    /**
-     * Initializes path by given string
-     *
-     * @param relativePath
-     *            Resources relative source path related to your webdav directory
-     */
-    private void initializePath(String relativePath)
-    {
-        this.davResourceUsage = false;
-
-        // Initialisation to avoid NullPointerException and mismatching
-        this.relativePath = (relativePath == null) ? "" : relativePath;
-
-        // Redundant initialisation tasks
-        this.initializeFullPath();
-    }
-
-    /**
-     * Initializes path by given resource
-     *
-     * @param resourceSRC
-     *            Source DavResource object to perform this action
-     */
-    private void initializeResource(DavResource resourceSRC)
-    {
-        this.resourceSRC = resourceSRC;
-        this.davResourceUsage = true;
-
-        // Assign path from DavResource
-        this.relativePath = (this.resourceSRC == null) ? "" : this.resourceSRC.getPath();
-        if (!this.relativePath.equals(""))
-        {
-            // Extract relative path from resource path
-            this.relativePath = this.relativePath.substring(this.webdavDir.length());
-        }
-
-        // Redundant initialisation tasks
-        this.initializeFullPath();
-    }
-
-    /**
-     * Initializes full path
-     */
-    private void initializeFullPath()
-    {
-        // Build full path
-        this.path = this.hostName + this.webdavDir + this.relativePath;
+        this.path = src.getHref().toString();
+        this.store = store;
     }
 
     @Override
     public void preValidate() throws Exception
     {
-        WebDavActionValidator.getInstance().validate(this);
-        SourceDavResourceValidator.getInstance().validate(this);
-
-        // Verify: Resource is a file
-        if (this.davResourceUsage)
-            Assert.assertFalse("Selected resource must be a file", this.resourceSRC.isDirectory());
+        WebDavActionValidator.validate(this);
+        SourceDavResourceValidator.validate(this);
     }
 
     @Override
     protected void execute() throws Exception
     {
-        InputStream is = sardine.get(PathBuilder.substituteWhiteSpace(this.path));
-        this.file = IOUtils.toByteArray(is);
-        is.close();
-
-        // Free local memory
-        this.freeResourceSRC();
-        if (!storageFlag)
+        try (final InputStream is = getSardine().get(path))
         {
-            this.file = null;
+        	if (store)
+        	{
+        		this.fileContent = IOUtils.toByteArray(is);
+        	}
+        	else
+        	{
+        		// just read, don't keep
+        		byte[] data = new byte[1024];
+
+        		while (is.read(data, 0, data.length) != -1) 
+        		{
+        			// nope
+        		}
+        	}
         }
     }
 
@@ -182,25 +126,16 @@ public class GetFile extends AbstractWebDavAction
     protected void postValidate() throws Exception
     {
         // Verify: Get operation succeeded -> 200
-        ResponseCodeValidator.getInstance().validate(this.httpResponseCode, 200);
-
+        ResponseCodeValidator.validate(getHttpResponseCode(), 200);
     }
 
     /**
      * Returns the result file as a byteArray
      *
-     * @return Result file
+     * @return the read file content
      */
-    public byte[] getFile()
+    public byte[] getFileContent()
     {
-        return file;
-    }
-
-    /**
-     * Releases the result Call this if you do not need the result anymore
-     */
-    public void releaseFile()
-    {
-        this.file = null;
+        return fileContent;
     }
 }

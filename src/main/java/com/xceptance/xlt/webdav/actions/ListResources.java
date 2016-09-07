@@ -1,15 +1,12 @@
 package com.xceptance.xlt.webdav.actions;
 
-import com.github.sardine.DavResource;
-import com.xceptance.xlt.webdav.impl.AbstractWebDavAction;
-import com.xceptance.xlt.webdav.util.PathBuilder;
-import com.xceptance.xlt.webdav.validators.post_validators.ResponseCodeValidator;
-import com.xceptance.xlt.webdav.validators.pre_validators.SourceDavResourceValidator;
-import com.xceptance.xlt.webdav.validators.pre_validators.WebDavActionValidator;
-
-import org.junit.Assert;
-
 import java.util.List;
+
+import com.github.sardine.DavResource;
+import com.xceptance.xlt.webdav.impl.AbstractWebDAVAction;
+import com.xceptance.xlt.webdav.validators.ResponseCodeValidator;
+import com.xceptance.xlt.webdav.validators.SourceDavResourceValidator;
+import com.xceptance.xlt.webdav.validators.WebDavActionValidator;
 
 /**
  * Lists a resource at a specific path by using WebDAV <code>PROPFIND</code> by sardine.list. Can be used by relative
@@ -20,7 +17,7 @@ import java.util.List;
  *
  * @author Karsten Sommer (Xceptance Software Technologies GmbH)
  */
-public class ListResources extends AbstractWebDavAction
+public class ListResources extends AbstractWebDAVAction
 {
     // Search depth at the destination path
     private int depth;
@@ -28,24 +25,55 @@ public class ListResources extends AbstractWebDavAction
     // Resource result set
     private List<DavResource> resources;
 
+    // the path to get
+    private final String path;
+    
     /**
      * Action with standard action name listed in the results, based on a path
      *
-     * @param relativePath
+     * @param path
+     *            Resources relative source path related to your webdav directory
+     */
+    public ListResources(final String path)
+    {
+        super();
+
+        this.depth = 0;
+        this.path = getAbsoluteURL(path);
+    }
+    
+    /**
+     * Action with standard action name listed in the results, based on a path
+     *
+     * @param path
      *            Resources relative source path related to your webdav directory
      * @param depth
      *            Depth of search (>= -1: -1 = infinity, 0 = single resource) maybe not supported by a server
      */
-    public ListResources(String relativePath, int depth)
+    public ListResources(final String path, final int depth)
     {
         super();
 
         this.depth = depth;
-
-        // Redundant initialisation tasks
-        this.initializePath(relativePath);
+        this.path = getAbsoluteURL(path);
     }
 
+    /**
+     * Action with specific name listed in the results, based on a path
+     *
+     * @param timerName
+     *            Is used for naming this action in results
+     * @param relativePath
+     *            Resources relative source path related to your webdav directory
+     */
+    public ListResources(final String timerName, final String path)
+    {
+        super(timerName);
+
+        this.depth = 0;
+        this.path = getAbsoluteURL(path);
+    }
+    
     /**
      * Action with specific name listed in the results, based on a path
      *
@@ -56,32 +84,42 @@ public class ListResources extends AbstractWebDavAction
      * @param depth
      *            Depth of search (>= -1: -1 = infinity, 0 = single resource) maybe not supported by a server
      */
-    public ListResources(String timerName, String relativePath, int depth)
+    public ListResources(final String timerName, final String path, final int depth)
     {
         super(timerName);
 
         this.depth = depth;
-
-        // Redundant initialisation tasks
-        this.initializePath(relativePath);
+        this.path = getAbsoluteURL(path);
     }
 
     /**
      * Action with standard action name listed in the results, based on a resource object
      *
-     * @param resourceSRC
+     * @param src
+     *            Source DavResource object to perform this action
+     */
+    public ListResources(final DavResource src)
+    {
+        super();
+
+        this.depth = 0;
+        this.path = src.getHref().toString();
+    }
+    
+    /**
+     * Action with standard action name listed in the results, based on a resource object
+     *
+     * @param src
      *            Source DavResource object to perform this action
      * @param depth
      *            Depth of search (>= -1: -1 = infinity, 0 = single resource) maybe not supported by a server
      */
-    public ListResources(DavResource resourceSRC, int depth)
+    public ListResources (final DavResource src, final int depth)
     {
         super();
 
         this.depth = depth;
-
-        // Redundant initialisation tasks
-        this.initializeResource(resourceSRC);
+        this.path = src.getHref().toString();
     }
 
     /**
@@ -94,90 +132,32 @@ public class ListResources extends AbstractWebDavAction
      * @param depth
      *            Depth of search (>= -1: -1 = infinity, 0 = single resource) maybe not supported by a server
      */
-    public ListResources(String timerName, DavResource resourceSRC, int depth)
+    public ListResources(final String timerName, final DavResource src, final int depth)
     {
         super(timerName);
 
         this.depth = depth;
-
-        // Redundant initialisation tasks
-        this.initializeResource(resourceSRC);
-    }
-
-    /**
-     * Initializes path by given string
-     *
-     * @param relativePath
-     *            Resources relative source path related to your webdav directory
-     */
-    private void initializePath(String relativePath)
-    {
-        this.davResourceUsage = false;
-
-        // initialisation to avoid NullPointerException and mismatching
-        this.relativePath = (relativePath == null) ? "" : relativePath;
-
-        // redundant initialisation tasks
-        this.initializeFullPath();
-
-    }
-
-    /**
-     * Initializes path by given resource
-     *
-     * @param resourceSRC
-     *            Source DavResource object to perform this action
-     */
-    private void initializeResource(DavResource resourceSRC)
-    {
-        this.resourceSRC = resourceSRC;
-        this.davResourceUsage = true;
-
-        // Assign path from DavResource
-        this.relativePath = (this.resourceSRC == null) ? "" : this.resourceSRC.getPath();
-        if (!this.relativePath.equals(""))
-        {
-            // Extract relative path from resource path
-            this.relativePath = this.relativePath.substring(this.webdavDir.length() + 1, this.relativePath.length());
-        }
-
-        // Redundant initialisation tasks
-        this.initializeFullPath();
-    }
-
-    /**
-     * Initializes full path
-     */
-    private void initializeFullPath()
-    {
-        // Build full path
-        this.path = this.hostName + this.webdavDir + this.relativePath;
+        this.path = src.getHref().toString();
     }
 
     @Override
     public void preValidate() throws Exception
     {
-        WebDavActionValidator.getInstance().validate(this);
-        SourceDavResourceValidator.getInstance().validate(this);
-
-        // Verify: Valid depth
-        Assert.assertTrue("You are going to use an invalid depth of " + this.depth + ". It must be >= -1", this.depth >= -1);
+        WebDavActionValidator.validate(this);
+        SourceDavResourceValidator.validate(this);
     }
 
     @Override
     protected void execute() throws Exception
     {
-        this.resources = this.sardine.list(PathBuilder.substituteWhiteSpace(this.path), depth, false);
-
-        // Free local memory
-        this.freeResourceSRC();
+        this.resources = this.getSardine().list(path, depth, false);
     }
 
     @Override
     protected void postValidate() throws Exception
     {
         // Verify: List operation succeeded -> 207
-        ResponseCodeValidator.getInstance().validate(this.httpResponseCode, 207);
+        ResponseCodeValidator.validate(getHttpResponseCode(), 207);
     }
 
     /**
@@ -188,13 +168,5 @@ public class ListResources extends AbstractWebDavAction
     public List<DavResource> getRessources()
     {
         return this.resources;
-    }
-
-    /**
-     * Releases the results Call this if you do not need the results anymore
-     */
-    public void releaseResources()
-    {
-        this.resources = null;
     }
 }

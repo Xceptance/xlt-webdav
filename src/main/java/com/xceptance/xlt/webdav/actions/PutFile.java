@@ -1,41 +1,42 @@
 package com.xceptance.xlt.webdav.actions;
 
+import java.io.InputStream;
+
 import org.junit.Assert;
 
-import com.xceptance.xlt.webdav.impl.AbstractWebDavAction;
-import com.xceptance.xlt.webdav.util.PathBuilder;
-import com.xceptance.xlt.webdav.validators.post_validators.ResponseCodeValidator;
-import com.xceptance.xlt.webdav.validators.pre_validators.WebDavActionValidator;
-
-import java.io.InputStream;
+import com.xceptance.xlt.webdav.impl.AbstractWebDAVAction;
+import com.xceptance.xlt.webdav.validators.ResponseCodeValidator;
+import com.xceptance.xlt.webdav.validators.WebDavActionValidator;
 
 /**
  * Puts a given file to a destination by using WebDAV <code>PUT</code> by sardine.put. Can be used by relative path
  * which describes the destination an a byteArray or InputStream as source file.
  */
-public class PutFile extends AbstractWebDavAction
+public class PutFile extends AbstractWebDAVAction
 {
     // File data to perform upload
-    private byte[] fileByBytes;
+    private final byte[] fileContent;
 
-    private InputStream fileByInputStream;
+    // alternative source
+    private final InputStream inputStream;
 
+    // path to write to
+    private final String path;
+    
     /**
      * Action with standard action name listed in the results, based on a path and a byte array as source
      * 
-     * @param relativePath
+     * @param path
      *            Files relative destination path related to your webdav directory
      * @param file
      *            Byte array to perform upload
      */
-    public PutFile(String relativePath, byte[] file)
+    public PutFile(final String path, final byte[] fileContent)
     {
         super();
-
-        this.fileByBytes = file;
-
-        // Redundant initialisation tasks
-        this.initialize(relativePath);
+        this.path = getAbsoluteURL(path);
+        this.fileContent = fileContent;
+        this.inputStream = null;
     }
 
     /**
@@ -48,32 +49,29 @@ public class PutFile extends AbstractWebDavAction
      * @param file
      *            byte array to perform upload
      */
-    public PutFile(String timerName, String relativePath, byte[] file)
+    public PutFile(final String timerName, final String path, byte[] fileContent)
     {
         super(timerName);
 
-        this.fileByBytes = file;
-
-        // Redundant initialisation tasks
-        this.initialize(relativePath);
+        this.fileContent = fileContent;
+        this.path = getAbsoluteURL(path);
+        this.inputStream = null;
     }
 
     /**
      * Action with standard action name listed in the results, based on a path and a input stream as source
      * 
-     * @param relativePath
+     * @param path
      *            Files relative destination path related to your webdav directory
-     * @param file
+     * @param inputStream
      *            InputStream to perform upload
      */
-    public PutFile(String relativePath, InputStream file)
+    public PutFile(final String path, final InputStream inputStream)
     {
         super();
-
-        this.fileByInputStream = file;
-
-        // Redundant initialisation tasks
-        this.initialize(relativePath);
+        this.fileContent = null;
+        this.path = getAbsoluteURL(path);
+        this.inputStream = inputStream;
     }
 
     /**
@@ -86,51 +84,35 @@ public class PutFile extends AbstractWebDavAction
      * @param file
      *            InputStream to perform upload
      */
-    public PutFile(String timerName, String relativePath, InputStream file)
+    public PutFile(final String timerName, final String path, final InputStream inputStream)
     {
         super(timerName);
-
-        this.fileByInputStream = file;
-
-        // Redundant initialisation tasks
-        this.initialize(relativePath);
-    }
-
-    /**
-     * Initializes path by given string
-     *
-     * @param relativePath
-     *            Files relative destination path related to your webdav directory
-     */
-    private void initialize(String relativePath)
-    {
-        // initialisation to avoid NullPointerException and mismatching
-        this.relativePath = (relativePath == null) ? "" : relativePath;
-        this.path = this.hostName + this.webdavDir + this.relativePath;
+        this.fileContent = null;
+        this.path = getAbsoluteURL(path);
+        this.inputStream = inputStream;
     }
 
     @Override
     public void preValidate() throws Exception
     {
-        WebDavActionValidator.getInstance().validate(this);
+        WebDavActionValidator.validate(this);
 
         // Verify: Data to perform upload is given
-        Assert.assertFalse("No content to perform upload", this.fileByBytes == null && this.fileByInputStream == null);
+        Assert.assertFalse("No content to perform upload", this.fileContent == null && this.inputStream == null);
     }
 
     @Override
     protected void execute() throws Exception
     {
         // Upload by InputStream
-        if (this.fileByInputStream != null)
-            this.sardine.put(PathBuilder.substituteWhiteSpace(this.path), this.fileByInputStream);
-        // Upload by byteArray
+        if (this.inputStream != null)
+        {
+            this.getSardine().put(path, this.inputStream);
+        }
         else
-            this.sardine.put(PathBuilder.substituteWhiteSpace(this.path), this.fileByBytes);
-
-        // Free local memory
-        this.fileByBytes = null;
-        this.fileByInputStream = null;
+        {
+            this.getSardine().put(path, this.fileContent);
+        }
     }
 
     @Override
@@ -139,6 +121,6 @@ public class PutFile extends AbstractWebDavAction
         // Verify: Put operation succeeded ->
         // 201 done by creating a new file
         // 204 done by overwriting an existing file
-        ResponseCodeValidator.getInstance().validate(this.httpResponseCode, 201, 204);
+        ResponseCodeValidator.validate(getHttpResponseCode(), 201, 204);
     }
 }

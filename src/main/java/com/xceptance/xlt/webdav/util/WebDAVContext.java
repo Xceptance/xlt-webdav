@@ -1,8 +1,9 @@
 package com.xceptance.xlt.webdav.util;
 
 import com.xceptance.xlt.api.engine.Session;
-import com.xceptance.xlt.webdav.impl.AbstractWebDavAction;
+import com.xceptance.xlt.webdav.impl.AbstractWebDAVAction;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,10 +14,10 @@ import java.util.Map;
  *
  * @author @author Karsten Sommer (Xceptance Software Technologies GmbH)
  */
-public abstract class WebDavContext
+public abstract class WebDAVContext
 {
     // UserID related storage for your action to be performed <String UserID, AbstractWebdavAction activeAction>
-    private static Map<String, AbstractWebDavAction> activeActions = new HashMap<String, AbstractWebDavAction>();
+    private static Map<String, AbstractWebDAVAction> activeActions = new HashMap<String, AbstractWebDAVAction>();
 
     /**
      * Returns last created action related to session userID Called implicit by AbstractWebdavAction's constructor to
@@ -24,9 +25,9 @@ public abstract class WebDavContext
      *
      * @return Current WebdavAction related to userID
      */
-    public static AbstractWebDavAction getActiveAction()
+    public static AbstractWebDAVAction getActiveAction()
     {
-        return WebDavContext.activeActions.get(Session.getCurrent().getUserID());
+        return WebDAVContext.activeActions.get(Session.getCurrent().getUserID());
     }
 
     /**
@@ -36,9 +37,9 @@ public abstract class WebDavContext
      * @param activeAction
      *            current WebdavAction which is getting to be performed
      */
-    public static void setActiveAction(AbstractWebDavAction activeAction)
+    public static void setActiveAction(AbstractWebDAVAction activeAction)
     {
-        WebDavContext.activeActions.put(Session.getCurrent().getUserID(), activeAction);
+        WebDAVContext.activeActions.put(Session.getCurrent().getUserID(), activeAction);
     }
 
     /**
@@ -47,8 +48,14 @@ public abstract class WebDavContext
      */
     public static void clean()
     {
-        WebDavContext.activeActions.get(Session.getCurrent().getUserID()).releaseClient();
-        WebDavContext.activeActions.put(Session.getCurrent().getUserID(), null);
+        try 
+        {
+			WebDAVContext.activeActions.get(Session.getCurrent().getUserID()).releaseClient();
+		} 
+        catch (IOException e) 
+        {
+		}
+        WebDAVContext.activeActions.put(Session.getCurrent().getUserID(), null);
     }
 
     /**
@@ -59,7 +66,7 @@ public abstract class WebDavContext
      */
     public static void setHostName(String hostName)
     {
-        WebDavContext.activeActions.get(Session.getCurrent().getUserID()).setHostName(hostName);
+        WebDAVContext.activeActions.get(Session.getCurrent().getUserID()).setHostName(hostName);
     }
 
     /**
@@ -69,9 +76,9 @@ public abstract class WebDavContext
      * @param webdavDir
      *            Relative webdav home directory related to hostName, for example: "webdav/"
      */
-    public static void setWebdavDir(String webdavDir)
+    public static void setWebdavDir(String webDAVDir)
     {
-        WebDavContext.activeActions.get(Session.getCurrent().getUserID()).setWebdavDir(webdavDir);
+        WebDAVContext.activeActions.get(Session.getCurrent().getUserID()).setWebDAVPath(webDAVDir);
     }
 
     /**
@@ -84,6 +91,6 @@ public abstract class WebDavContext
      */
     public static void setCredentials(String userName, String userPassword)
     {
-        WebDavContext.activeActions.get(Session.getCurrent().getUserID()).setCredentials(userName, userPassword);
+        WebDAVContext.activeActions.get(Session.getCurrent().getUserID()).setCredentials(userName, userPassword);
     }
 }

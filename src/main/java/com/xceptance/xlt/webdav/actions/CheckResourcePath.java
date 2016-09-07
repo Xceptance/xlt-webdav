@@ -3,11 +3,10 @@ package com.xceptance.xlt.webdav.actions;
 import org.junit.Assert;
 
 import com.github.sardine.DavResource;
-import com.xceptance.xlt.webdav.impl.AbstractWebDavAction;
-import com.xceptance.xlt.webdav.util.PathBuilder;
-import com.xceptance.xlt.webdav.validators.post_validators.ResponseCodeValidator;
-import com.xceptance.xlt.webdav.validators.pre_validators.SourceDavResourceValidator;
-import com.xceptance.xlt.webdav.validators.pre_validators.WebDavActionValidator;
+import com.xceptance.xlt.webdav.impl.AbstractWebDAVAction;
+import com.xceptance.xlt.webdav.validators.ResponseCodeValidator;
+import com.xceptance.xlt.webdav.validators.SourceDavResourceValidator;
+import com.xceptance.xlt.webdav.validators.WebDavActionValidator;
 
 /**
  * Checks if a resources path exists by using WebDAV <code>HEAD</code> by sardine.exists. Can be used by relative path
@@ -15,31 +14,31 @@ import com.xceptance.xlt.webdav.validators.pre_validators.WebDavActionValidator;
  *
  * @author Karsten Sommer (Xceptance Software Technologies GmbH)
  */
-public class CheckResourcePath extends AbstractWebDavAction
+public class CheckResourcePath extends AbstractWebDAVAction
 {
     // Expectation of resources existence
-    private boolean expectation;
+    private boolean exists;
 
     // Verification of path validity
-    private boolean isValid;
+    private boolean doesExist = false;
 
+    // the path to check
+    private final String path;
+    
     /**
      * Action with standard action name listed in the results, based on a path
      *
      * @param relativePath
      *            Resources relative source path related to your webdav directory
-     * @param expectation
+     * @param exists
      *            Expected state of resources existence
      */
-    public CheckResourcePath(String relativePath, boolean expectation)
+    public CheckResourcePath(String relativePath, boolean exists)
     {
         super();
-
-        this.expectation = expectation;
-        this.davResourceUsage = false;
-
-        // Redundant initialisation tasks
-        this.initializePath(relativePath);
+        
+        this.exists = exists;
+        path = getAbsoluteURL(relativePath);
     }
 
     /**
@@ -52,15 +51,12 @@ public class CheckResourcePath extends AbstractWebDavAction
      * @param expectation
      *            Expected state of resources existence
      */
-    public CheckResourcePath(String timerName, String relativePath, boolean expectation)
+    public CheckResourcePath(String timerName, String relativePath, boolean exists)
     {
         super(timerName);
 
-        this.expectation = expectation;
-        this.davResourceUsage = false;
-
-        // Redundant initialisation tasks
-        this.initializePath(relativePath);
+        this.exists = exists;
+        path = getAbsoluteURL(relativePath);
     }
 
     /**
@@ -71,15 +67,12 @@ public class CheckResourcePath extends AbstractWebDavAction
      * @param expectation
      *            Expected state of resources existence
      */
-    public CheckResourcePath(DavResource resourceSRC, boolean expectation)
+    public CheckResourcePath(DavResource davResource, boolean exists)
     {
         super();
 
-        this.expectation = expectation;
-        this.davResourceUsage = true;
-
-        // Redundant initialisation tasks
-        this.initializeResource(resourceSRC);
+        this.exists = exists;
+        path = davResource.getHref().toString(); 
     }
 
     /**
@@ -92,101 +85,43 @@ public class CheckResourcePath extends AbstractWebDavAction
      * @param expectation
      *            Expected state of resources existence
      */
-    public CheckResourcePath(String timerName, DavResource resourceSRC, boolean expectation)
+    public CheckResourcePath(String timerName, DavResource davResource, boolean exists)
     {
         super(timerName);
-
-        this.expectation = expectation;
-        this.davResourceUsage = true;
-
-        // Redundant initialisation tasks
-        this.initializeResource(resourceSRC);
-    }
-
-    /**
-     * Initializes paths by given strings
-     *
-     * @param relativePath
-     *            Resources relative source path related to your webdav directory
-     */
-    private void initializePath(String relativePath)
-    {
-        // initialisation to avoid NullPointerException and mismatching
-        this.relativePath = (relativePath == null) ? "" : relativePath;
-
-        // redundant initialisation tasks
-        this.initializeFullPath();
-    }
-
-    /**
-     * Initializes paths by given resource and string
-     *
-     * @param resourceSRC
-     *            Source DavResource object to perform this action
-     */
-    private void initializeResource(DavResource resourceSRC)
-    {
-        this.resourceSRC = resourceSRC;
-        this.davResourceUsage = true;
-
-        // Assign path from DavResource
-        this.relativePath = (this.resourceSRC == null) ? "" : this.resourceSRC.getPath();
-        if (!this.relativePath.equals(""))
-        {
-            // Extract relative path from resource path
-            this.relativePath = this.relativePath.substring(this.webdavDir.length() + 1, this.relativePath.length());
-        }
-
-        // Redundant initialisation tasks
-        this.initializeFullPath();
-    }
-
-    /**
-     * Initializes full path
-     */
-    private void initializeFullPath()
-    {
-        // Initialisation
-        this.isValid = false;
-
-        // Build full path
-        this.path = this.hostName + this.webdavDir + this.relativePath;
+        
+        this.exists = exists;
+        path = davResource.getHref().toString();
     }
 
     @Override
     public void preValidate() throws Exception
     {
-        WebDavActionValidator.getInstance().validate(this);
-        SourceDavResourceValidator.getInstance().validate(this);
+        WebDavActionValidator.validate(this);
+        SourceDavResourceValidator.validate(this);
     }
 
     @Override
     protected void execute() throws Exception
     {
         // Responds http 404 in case of a non existing resource without SardineException
-        this.isValid = this.sardine.exists(PathBuilder.substituteWhiteSpace(this.path));
-
-        // Free local memory
-        this.freeResourceSRC();
+        this.doesExist = getSardine().exists(path);
     }
 
     @Override
     protected void postValidate() throws Exception
     {
         // Verify: Resource expectations
-        Assert.assertTrue("The response of your check does not macht your expectation", this.expectation == this.isValid);
+    	if (this.exists)
+    	{
+    		Assert.assertTrue("The resource does not exist", this.doesExist);
+    	}
+    	else
+    	{
+    		Assert.assertFalse("The resource does exist", this.doesExist);
+    	}    	
 
-        // Verify: check operation succeeded -> 200, 404
-        ResponseCodeValidator.getInstance().validate(this.httpResponseCode, (this.isValid) ? 200 : 404);
+    	// Verify: check operation succeeded -> 200, 404
+        ResponseCodeValidator.validate(getHttpResponseCode(), this.exists ? 200 : 404);
     }
 
-    /**
-     * Holds the information of validity of the used path after performing this action
-     *
-     * @return State of resources existence
-     */
-    public boolean isValid()
-    {
-        return this.isValid;
-    }
 }

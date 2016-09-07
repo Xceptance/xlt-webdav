@@ -1,11 +1,10 @@
 package com.xceptance.xlt.webdav.actions;
 
 import com.github.sardine.DavResource;
-import com.xceptance.xlt.webdav.impl.AbstractWebDavAction;
-import com.xceptance.xlt.webdav.util.PathBuilder;
-import com.xceptance.xlt.webdav.validators.post_validators.ResponseCodeValidator;
-import com.xceptance.xlt.webdav.validators.pre_validators.SourceDavResourceValidator;
-import com.xceptance.xlt.webdav.validators.pre_validators.WebDavActionValidator;
+import com.xceptance.xlt.webdav.impl.AbstractWebDAVAction;
+import com.xceptance.xlt.webdav.validators.ResponseCodeValidator;
+import com.xceptance.xlt.webdav.validators.SourceDavResourceValidator;
+import com.xceptance.xlt.webdav.validators.WebDavActionValidator;
 
 /**
  * Deletes a resource by using WebDAV <code>DELETE</code> by sardine.delete. Can be used by relative path or by a
@@ -13,20 +12,21 @@ import com.xceptance.xlt.webdav.validators.pre_validators.WebDavActionValidator;
  *
  * @author Karsten Sommer (Xceptance Software Technologies GmbH)
  */
-public class DeleteResource extends AbstractWebDavAction
+public class DeleteResource extends AbstractWebDAVAction
 {
+	// our path to delete
+	private final String path;
+	
     /**
      * Action with standard action name listed in the results, based on a path
      *
      * @param relativePath
      *            Resources relative source path related to your webdav directory
      */
-    public DeleteResource(String relativePath)
+    public DeleteResource(final String path)
     {
         super();
-
-        // Redundant initialisation tasks
-        this.initializePath(relativePath);
+        this.path = getAbsoluteURL(path);
     }
 
     /**
@@ -34,29 +34,25 @@ public class DeleteResource extends AbstractWebDavAction
      *
      * @param timerName
      *            Is used for naming this action in results
-     * @param relativePath
+     * @param path
      *            Resources relative source path related to your webdav directory
      */
-    public DeleteResource(String timerName, String relativePath)
+    public DeleteResource(final String timerName, final String path)
     {
         super(timerName);
-
-        // Redundant initialisation tasks
-        this.initializePath(relativePath);
+        this.path = getAbsoluteURL(path);
     }
 
     /**
      * Action with standard action name listed in the results, based on a resource object
      *
-     * @param resourceSRC
+     * @param src
      *            Source DavResource object to perform this action
      */
-    public DeleteResource(DavResource resourceSRC)
+    public DeleteResource(final DavResource src)
     {
         super();
-
-        // Redundant initialisation tasks
-        this.initializeResource(resourceSRC);
+        path = src.getHref().toString();
     }
 
     /**
@@ -64,86 +60,32 @@ public class DeleteResource extends AbstractWebDavAction
      *
      * @param timerName
      *            Is used for naming this action in results
-     * @param resourceSRC
+     * @param src
      *            Source DavResource object to perform this action
      */
-    public DeleteResource(String timerName, DavResource resourceSRC)
+    public DeleteResource(final String timerName, final DavResource src)
     {
         super(timerName);
-
-        // Redundant initialisation tasks
-        this.initializeResource(resourceSRC);
-    }
-
-    /**
-     * Initializes path by given string
-     *
-     * @param relativePath
-     *            Resources relative source path related to your webdav directory
-     */
-    private void initializePath(String relativePath)
-    {
-        this.davResourceUsage = false;
-
-        // Initialisation to avoid NullPointerException and mismatching
-        this.relativePath = (relativePath == null) ? "" : relativePath;
-
-        // Redundant initialisation tasks
-        this.initializeFullPath();
-    }
-
-    /**
-     * Initializes path by given resource
-     *
-     * @param resourceSRC
-     *            Source DavResource object to perform this action
-     */
-    private void initializeResource(DavResource resourceSRC)
-    {
-        this.resourceSRC = resourceSRC;
-        this.davResourceUsage = true;
-
-        // Assign path from DavResource
-        this.relativePath = (this.resourceSRC == null) ? "" : this.resourceSRC.getPath();
-        if (!this.relativePath.equals(""))
-        {
-            // Extract relative path from resource path
-            this.relativePath = this.relativePath.substring(this.webdavDir.length());
-        }
-
-        // Redundant initialisation tasks
-        this.initializeFullPath();
-    }
-
-    /**
-     * Initializes full path and path for logging purpose
-     */
-    private void initializeFullPath()
-    {
-        // Build full path
-        this.path = this.hostName + this.webdavDir + this.relativePath;
+        path = src.getHref().toString();
     }
 
     @Override
     public void preValidate() throws Exception
     {
-        WebDavActionValidator.getInstance().validate(this);
-        SourceDavResourceValidator.getInstance().validate(this);
+        WebDavActionValidator.validate(this);
+        SourceDavResourceValidator.validate(this);
     }
 
     @Override
     protected void execute() throws Exception
     {
-        this.sardine.delete(PathBuilder.substituteWhiteSpace(this.path));
-
-        // Free local memory
-        this.freeResourceSRC();
+        this.getSardine().delete(path);
     }
 
     @Override
     protected void postValidate() throws Exception
     {
         // Verify: Delete operation succeeded -> 204
-        ResponseCodeValidator.getInstance().validate(this.httpResponseCode, 204);
+        ResponseCodeValidator.validate(getHttpResponseCode(), 204);
     }
 }

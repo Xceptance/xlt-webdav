@@ -1,72 +1,72 @@
 package com.xceptance.xlt.webdav.impl;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.net.URLEncoder;
+
+import org.apache.commons.lang3.StringUtils;
+
 import com.github.sardine.DavResource;
 import com.github.sardine.Sardine;
 import com.xceptance.xlt.api.actions.AbstractAction;
 import com.xceptance.xlt.api.engine.RequestData;
-import com.xceptance.xlt.webdav.util.WebDavContext;
+import com.xceptance.xlt.webdav.util.WebDAVContext;
 
 /**
  * Basic webdav action.
  *
  * @author Karsten Sommer (Xceptance Software Technologies GmbH)
  */
-public abstract class AbstractWebDavAction extends AbstractAction
+public abstract class AbstractWebDAVAction extends AbstractAction
 {
     // Sardine client returned by SardineFactory
-    protected Sardine sardine;
+    private Sardine sardine;
 
     // Related user name for credentials
-    protected String userName;
+    private String userName;
 
     // Related user name for credentials
-    protected String userPassword;
+    private String userPassword;
 
     // Related host name to perform actions
-    protected String hostName;
+    private String hostName;
 
     // Related webdav directory relative to host name
-    protected String webdavDir;
+    private String webDAVPath;
 
     // Exception message text if thrown
-    protected String exMessage;
+    private String exMessage;
 
     // Http response code
-    protected int httpResponseCode;
+    private int httpResponseCode = -1;
 
     // Http content type
-    protected String httpContentType;
+    private String httpContentType;
 
-    // Paths to check related resources
-    // if two paths are in use (source and destination), this mirrors the destination path where the
-    // http request is sent to
-    protected String relativePath;
-
-    protected String path;
-
-    // Source resource to perform action
-    // (lternatively to path description of its source)
-    protected DavResource resourceSRC;
-
-    protected boolean davResourceUsage;
-
+	// shall we automatically url encode the path info?
+    private boolean autoURLEncoding = true;
+    
     // Request data for analytic purpose
-    protected RequestData requestData;
+    private RequestData requestData;
 
     // Previous performed action
-    protected AbstractWebDavAction previousWebdavAction;
+    private AbstractWebDAVAction previousWebDAVAction;
+    
+    // the DavResource returned by this action, if any
+    private DavResource response;
 
     /**
      * Basic constructor for actions without specific named results
      */
-    public AbstractWebDavAction()
+    public AbstractWebDAVAction()
     {
-        super(WebDavContext.getActiveAction(), null);
+        super(WebDAVContext.getActiveAction(), null);
 
         // redundant initialisation tasks
         this.initialisation();
 
-        WebDavContext.setActiveAction(this);
+        WebDAVContext.setActiveAction(this);
     }
 
     /**
@@ -75,14 +75,14 @@ public abstract class AbstractWebDavAction extends AbstractAction
      * @param timerName
      *            Name which should be used for this action in results
      */
-    public AbstractWebDavAction(String timerName)
+    public AbstractWebDAVAction(String timerName)
     {
-        super(WebDavContext.getActiveAction(), timerName);
+        super(WebDAVContext.getActiveAction(), timerName);
 
         // redundant initialisation tasks
         this.initialisation();
 
-        WebDavContext.setActiveAction(this);
+        WebDAVContext.setActiveAction(this);
     }
 
     /**
@@ -91,22 +91,16 @@ public abstract class AbstractWebDavAction extends AbstractAction
     private void initialisation()
     {
         // Set previously performed action if exists, otherwise NULL
-        this.previousWebdavAction = WebDavContext.getActiveAction();
+        this.previousWebDAVAction = WebDAVContext.getActiveAction();
 
         // Assume information from previous action
-        if (this.previousWebdavAction != null)
+        if (this.previousWebDAVAction != null)
         {
-            this.sardine = this.previousWebdavAction.getSardine();
-            this.userName = this.previousWebdavAction.getUserName();
-            this.userPassword = this.previousWebdavAction.getUserPassword();
-            this.hostName = this.previousWebdavAction.getHostName();
-            this.webdavDir = this.previousWebdavAction.getWebdavDir();
-        }
-        else
-        {
-            // Initialisation to avoid NullPointerException and mismatching
-            this.hostName = "";
-            this.webdavDir = "";
+            this.sardine = this.previousWebDAVAction.getSardine();
+            this.userName = this.previousWebDAVAction.getUserName();
+            this.userPassword = this.previousWebDAVAction.getUserPassword();
+            this.hostName = this.previousWebDAVAction.getHostName();
+            this.webDAVPath = this.previousWebDAVAction.getWebDAVPath();
         }
 
         // Provide sardine client if necessary
@@ -117,17 +111,17 @@ public abstract class AbstractWebDavAction extends AbstractAction
         }
 
         // Initialisation of response values
-        this.exMessage = ""; // no Exception
-        this.httpResponseCode = 0; // No Response
-        this.httpContentType = ""; // No Response
+        this.exMessage = null; // no Exception
+        this.httpResponseCode = -1; // Not executed yet
+        this.httpContentType = null; // No Response
     }
 
     /**
      * @return Previously performed action
      */
-    public AbstractWebDavAction getPreviousAction()
+    public AbstractWebDAVAction getPreviousAction()
     {
-        return this.previousWebdavAction;
+        return this.previousWebDAVAction;
     }
 
     /**
@@ -187,17 +181,53 @@ public abstract class AbstractWebDavAction extends AbstractAction
     public void setHostName(String hostName)
     {
         this.hostName = hostName;
-        this.path = this.hostName + this.webdavDir + this.relativePath;
     }
 
     /**
      * @return Relative path of wendav's home directory at the server
      */
-    public String getWebdavDir()
+    public String getWebDAVPath()
     {
-        return this.webdavDir;
+        return this.webDAVPath;
     }
-
+    
+    /**
+     * Returns the full absolute url of the current state
+     * 
+     * @param relativePath the relative path to append
+     * @return absolute url
+     */
+	public String getAbsoluteURL(final String relativePath)
+    {    	
+    	// build us a new valid url
+    	final StringBuilder url = new StringBuilder(256);
+    	
+    	// hostname first, strip /
+    	url.append(StringUtils.stripEnd(this.hostName, "/"));
+    	
+    	final StringBuilder path = new StringBuilder(256); 
+    	path.append("/");
+    	path.append(StringUtils.strip(this.webDAVPath, "/"));
+    	path.append("/");
+    	path.append(StringUtils.stripStart(relativePath, "/"));
+    	
+    	// shall we encode the path?
+    	try 
+    	{
+			if (autoURLEncoding)
+			{
+				url.append(URLEncoder.encode(path.toString(), "UTF-8"));
+			}
+		} 
+    	catch (UnsupportedEncodingException e) 
+    	{
+    		// unlikely!
+			url.append(URLEncoder.encode(path.toString()));
+		}
+    	
+    	return url.toString();
+    }
+    
     /**
      * Sets your webdav home directory path if used, otherwise use "" you can also set your favorite path, to shorten
      * your input relativePath's
@@ -205,41 +235,22 @@ public abstract class AbstractWebDavAction extends AbstractAction
      * @param webdavDir
      *            Relative webdav home directory related to hostname, for example: "webdav/"
      */
-    public void setWebdavDir(String webdavDir)
+    public void setWebDAVPath(String webDAVPath)
     {
-        this.webdavDir = webdavDir;
-        this.path = this.hostName + this.webdavDir + this.relativePath;
-    }
-
-    /**
-     * Gets the relative path of this action
-     *
-     * @return Relative path of performed action to reuse it in following actions
-     */
-    public String getUsedRelativePath()
-    {
-        return this.relativePath;
-    }
-
-    public String getUsedPath()
-    {
-        return this.path;
+        this.webDAVPath = webDAVPath;
     }
 
     /**
      * Sardine client shutdown and release (implicit given by WebdavContext's clean method) which must to be used at the
      * end of your testcase
+     * @throws IOException 
      */
-    public void releaseClient()
+    public void releaseClient() throws IOException
     {
         // Clean shutdown of sardine client
         try
         {
             this.sardine.shutdown();
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
         }
         finally
         {
@@ -283,27 +294,53 @@ public abstract class AbstractWebDavAction extends AbstractAction
     /**
      * Use this to release DavResource objects after performing an action
      */
-    public void freeResourceSRC()
+    public void free()
     {
-        this.resourceSRC = null;
+        this.response = null;
     }
 
     /**
-     * Gets a flag of DavResource usage inside the action Set this true if you build your own action using DavResources
-     * as source and the WebDavActionValidator
-     */
-    public boolean getDavResourceUsage()
-    {
-        return this.davResourceUsage;
-    }
-
-    /**
-     * Returns the DavResource source object
+     * Returns the DavResource source object that came back from an operation.
+     * No all operations return these!
      *
-     * @return DavResource source object
+     * @return DavResource response object
      */
-    public DavResource getResourceSRC()
+    public DavResource getResponse()
     {
-        return this.resourceSRC;
+        return this.response;
     }
+
+    /**
+     * Returns whether or not we want to auto encode the pathinfo correctly.
+     * Set this to false if you input encoded path information
+     * @return true if auto path encoding is one, false otherwise
+     */
+    public boolean isAutoURLEncoding() 
+    {
+		return autoURLEncoding;
+	}
+
+    /**
+     * Turn on or off automatic url encoding of the path. It is on by
+     * default and has to be disabled if not desired.  
+     * 
+     * @param autoURLEncoding
+     */
+	public void setAutoURLEncoding(boolean autoURLEncoding) 
+	{
+		this.autoURLEncoding = autoURLEncoding;
+	}
+
+	/**
+	 * Returns the last response code. Will return -1 if no execution has 
+	 * taken place so far.
+	 * 
+	 * @return the response code, -1 if no execution has taken place
+	 */
+	public int getHttpResponseCode() 
+	{
+		return httpResponseCode;
+	}
+
+    
 }

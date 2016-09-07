@@ -11,19 +11,6 @@ import org.junit.Assert;
 public class ResponseCodeValidator
 {
     /**
-     * Provides a singleton validator
-     */
-    private static final ResponseCodeValidator instance = new ResponseCodeValidator();
-
-    /**
-     * @return Instance of this validator
-     */
-    public static ResponseCodeValidator getInstance()
-    {
-        return instance;
-    }
-
-    /**
      * Validates that the passed actual response code is one of the given expected response codes.
      *
      * @param actualResponseCode
@@ -33,7 +20,7 @@ public class ResponseCodeValidator
      * @throws AssertionError
      *             if validation fails
      */
-    public void validate(int actualResponseCode, int... expectedResponseCodes) throws Exception
+    public static void validate(int actualResponseCode, int... expectedResponseCodes) throws Exception
     {
         Assert.assertTrue("Unexpected response code: " + actualResponseCode + " is not one of "
                               + ArrayUtils.toString(expectedResponseCodes),

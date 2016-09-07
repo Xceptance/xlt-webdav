@@ -20,7 +20,7 @@ import com.xceptance.xlt.api.engine.RequestData;
 import com.xceptance.xlt.api.engine.Session;
 import com.xceptance.xlt.engine.util.socket.SocketStatistics;
 import com.xceptance.xlt.engine.util.socket.XltSockets;
-import com.xceptance.xlt.webdav.util.WebDavContext;
+import com.xceptance.xlt.webdav.util.WebDAVContext;
 
 /**
  * A wrapper around a {@link CloseableHttpClient} object that delegates all method calls to the wrapped object, but
@@ -97,7 +97,7 @@ public class CloseableHttpClientWrapper extends CloseableHttpClient
     protected CloseableHttpResponse doExecute(HttpHost target, HttpRequest request, HttpContext context) throws IOException
     {
         // initialize the request data object which will carry all request/response details
-        RequestData requestData = new RequestData(WebDavContext.getActiveAction().getTimerName());
+        RequestData requestData = new RequestData(WebDAVContext.getActiveAction().getTimerName());
 
         try
         {
@@ -127,7 +127,7 @@ public class CloseableHttpClientWrapper extends CloseableHttpClient
             requestData.setFailed(responseCode >= 500);
 
             // update the current action
-            AbstractWebDavAction action = WebDavContext.getActiveAction();
+            AbstractWebDAVAction action = WebDAVContext.getActiveAction();
             action.setHttpResponseCode(responseCode);
             action.setHttpContentType(responseContentType);
 
@@ -140,7 +140,7 @@ public class CloseableHttpClientWrapper extends CloseableHttpClient
             requestData.setFailed(true);
 
             // update the current action
-            WebDavContext.getActiveAction().setExMessage(ex.getMessage());
+            WebDAVContext.getActiveAction().setExMessage(ex.getMessage());
 
             // rethrow the exception
             throw ex;

@@ -1,9 +1,8 @@
 package com.xceptance.xlt.webdav.actions;
 
-import com.xceptance.xlt.webdav.impl.AbstractWebDavAction;
-import com.xceptance.xlt.webdav.util.PathBuilder;
-import com.xceptance.xlt.webdav.validators.post_validators.ResponseCodeValidator;
-import com.xceptance.xlt.webdav.validators.pre_validators.WebDavActionValidator;
+import com.xceptance.xlt.webdav.impl.AbstractWebDAVAction;
+import com.xceptance.xlt.webdav.validators.ResponseCodeValidator;
+import com.xceptance.xlt.webdav.validators.WebDavActionValidator;
 
 /**
  * Creates a directory at a destination by using WebDAV <code>MKCOL</code> by sardine.createDirectory. Can be used by
@@ -12,20 +11,21 @@ import com.xceptance.xlt.webdav.validators.pre_validators.WebDavActionValidator;
  *
  * @author Karsten Sommer (Xceptance Software Technologies GmbH)
  */
-public class CreateDirectory extends AbstractWebDavAction
+public class CreateDirectory extends AbstractWebDAVAction
 {
+	// the path to create
+	private final String path;
+	
     /**
      * Action with standard action name listed in the results, based on a path
      *
-     * @param relativePath
-     *            Directory's relative destination path related to your webdav directory
+     * @param path
+     *            Directory's relative destination path relative to your webdav directory
      */
-    public CreateDirectory(String relativePath)
+    public CreateDirectory(final String path)
     {
         super();
-
-        // Redundant initialization tasks
-        this.initialize(relativePath);
+        this.path = getAbsoluteURL(path);
     }
 
     /**
@@ -33,48 +33,31 @@ public class CreateDirectory extends AbstractWebDavAction
      *
      * @param timerName
      *            Is used for naming this action in results
-     * @param relativePath
-     *            Directory's relative destination path related to your webdav directory
+     * @param path
+     *            Directory's relative destination path relative to your webdav directory
      */
-    public CreateDirectory(String timerName, String relativePath)
+    public CreateDirectory(final String timerName, final String path)
     {
         super(timerName);
-
-        // Redundant initialization tasks
-        this.initialize(relativePath);
-    }
-
-    /**
-     * Initializes path by given string
-     *
-     * @param relativePath
-     *            Directory's relative destination path related to your webdav directory
-     */
-    private void initialize(String relativePath)
-    {
-        // Initialization to avoid NullPointerException and mismatching
-        this.relativePath = (relativePath == null) ? "" : relativePath;
-
-        // Build full path
-        this.path = this.hostName + this.webdavDir + this.relativePath;
+        this.path = getAbsoluteURL(path);
     }
 
     @Override
     public void preValidate() throws Exception
     {
-        WebDavActionValidator.getInstance().validate(this);
+        WebDavActionValidator.validate(this);
     }
 
     @Override
     protected void execute() throws Exception
     {
-        this.sardine.createDirectory(PathBuilder.substituteWhiteSpace(this.path));
+        this.getSardine().createDirectory(path);
     }
 
     @Override
     protected void postValidate() throws Exception
     {
         // Verify: create operation succeeded -> 201
-        ResponseCodeValidator.getInstance().validate(this.httpResponseCode, 201);
+        ResponseCodeValidator.validate(getHttpResponseCode(), 201);
     }
 }

@@ -16,19 +16,6 @@ import com.xceptance.xlt.webdav.impl.AbstractWebDAVAction;
 public class WebDavActionValidator
 {
     /**
-     * Provides a singleton validator
-     */
-    private static final WebDavActionValidator instance = new WebDavActionValidator();
-
-    /**
-     * @return Instance of this validator
-     */
-    public static WebDavActionValidator getInstance()
-    {
-        return instance;
-    }
-
-    /**
      * Validates the existence of a client, host name settings, well credential settings and paths of a WebdavAction
      * 
      * @param activeAction
@@ -36,7 +23,7 @@ public class WebDavActionValidator
      * @throws Exception
      *             Assertion failure
      */
-    public void validate(AbstractWebDAVAction activeAction) throws Exception
+    public static void validate(AbstractWebDAVAction activeAction) throws Exception
     {
         // Verify: Host name is not blank
         Assert.assertTrue("Host name must not be blank", StringUtils.isNotBlank(activeAction.getHostName()));
@@ -47,15 +34,5 @@ public class WebDavActionValidator
 
         // Verify: Sardine client is not null
         Assert.assertNotNull("Sardine client must not be null", activeAction.getSardine());
-
-        // Verify: RelativePath is not blank
-        // Exclude ListResources and CheckResources which are able to be performed with an empty path
-        if (!(activeAction instanceof ListResources) && !(activeAction instanceof CheckResourcePath))
-        {
-            Assert.assertTrue("RelativePath must not be blank", StringUtils.isNotBlank(activeAction.getUsedRelativePath()));
-        }
-
-        // Verify: Path is not blank
-        Assert.assertTrue("Absolute path must not be blank", StringUtils.isNotBlank(activeAction.getAbsoluteURL()));
     }
 }
