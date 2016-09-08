@@ -16,10 +16,10 @@ import com.xceptance.xlt.webdav.validators.WebDavActionValidator;
 public class WebDAVCopy extends AbstractWebDAVAction
 {
     // source
-    private String src;
+    private final String src;
 
     // destination
-    private String dst;
+    private final String dst;
 
     /**
      * Action with standard action name listed in the results, based on a path
@@ -29,27 +29,9 @@ public class WebDAVCopy extends AbstractWebDAVAction
      * @param dst
      *            Resources relative destination path related to your webdav directory
      */
-    public WebDAVCopy(String src, String dst)
+    public WebDAVCopy(final String src, final String dst)
     {
         super();
-
-        this.src = getAbsoluteURL(src);
-        this.dst = getAbsoluteURL(dst);
-    }
-
-    /**
-     * Action with specific name listed in the results, based on a path
-     *
-     * @param timerName
-     *            Is used for naming this action in results
-     * @param src
-     *            Resources relative source path related to your webdav directory
-     * @param dst
-     *            Resources relative destination path related to your webdav directory
-     */
-    public WebDAVCopy(String timerName, String src, String dst)
-    {
-        super(timerName);
 
         this.src = getAbsoluteURL(src);
         this.dst = getAbsoluteURL(dst);
@@ -63,32 +45,14 @@ public class WebDAVCopy extends AbstractWebDAVAction
      * @param dst
      *            Resources relative destination path related to your webdav directory
      */
-    public WebDAVCopy(DavResource src, String dst)
+    public WebDAVCopy(final DavResource src, final String dst)
     {
         super();
 
         this.src = src.getHref().toString();
         this.dst = getAbsoluteURL(dst);
     }
-
-    /**
-     * Action with specific name listed in the results, based on a resource object
-     *
-     * @param timerName
-     *            Is used for naming this action in results
-     * @param src
-     *            Source DavResource object to perform this action
-     * @param dst
-     *            Resources relative destination path related to your webdav directory
-     */
-    public WebDAVCopy(String timerName, DavResource src, String dst)
-    {
-        super(timerName);
-
-        this.src = src.getHref().toString();
-        this.dst = getAbsoluteURL(dst);
-    }
-
+ 
     @Override
     public void preValidate() throws Exception
     {

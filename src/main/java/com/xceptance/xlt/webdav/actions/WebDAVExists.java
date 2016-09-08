@@ -33,28 +33,10 @@ public class WebDAVExists extends AbstractWebDAVAction
      * @param exists
      *            Expected state of resources existence
      */
-    public WebDAVExists(String relativePath, boolean exists)
+    public WebDAVExists(final String relativePath, final boolean exists)
     {
         super();
         
-        this.exists = exists;
-        path = getAbsoluteURL(relativePath);
-    }
-
-    /**
-     * Action with specific name listed in the results, based on a path
-     *
-     * @param timerName
-     *            Is used for naming this action in results
-     * @param relativePath
-     *            Resources relative source path related to your webdav directory
-     * @param expectation
-     *            Expected state of resources existence
-     */
-    public WebDAVExists(String timerName, String relativePath, boolean exists)
-    {
-        super(timerName);
-
         this.exists = exists;
         path = getAbsoluteURL(relativePath);
     }
@@ -73,24 +55,6 @@ public class WebDAVExists extends AbstractWebDAVAction
 
         this.exists = exists;
         path = davResource.getHref().toString(); 
-    }
-
-    /**
-     * Action with specific name listed in the results, based on a resource object
-     *
-     * @param timerName
-     *            Is used for naming this action in results
-     * @param resourceSRC
-     *            Source DavResource object to perform this action
-     * @param expectation
-     *            Expected state of resources existence
-     */
-    public WebDAVExists(String timerName, DavResource davResource, boolean exists)
-    {
-        super(timerName);
-        
-        this.exists = exists;
-        path = davResource.getHref().toString();
     }
 
     @Override

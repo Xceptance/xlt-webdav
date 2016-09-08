@@ -21,10 +21,10 @@ public class WebDAVConnect extends AbstractWebDAVAction
     /**
      * Action with standard action name listed in the results, based on a path
      *
-     * @param relativePath
-     *            Resources relative source path related to your webdav directory
-     * @param exists
-     *            Expected state of resources existence
+     * @param hostname the hostname and the protocol to use
+     * @param webDAVPath the webDAVPath, this is mostly the root directory
+     * @param username the user name if authorization is required, can be null
+     * @param password the password if authorization is required, can be null
      */
     public WebDAVConnect(String hostname, String webDAVPath, String username, String password)
     {

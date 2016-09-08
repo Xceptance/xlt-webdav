@@ -19,7 +19,7 @@ import com.xceptance.xlt.webdav.validators.WebDavActionValidator;
 public class WebDAVList extends AbstractWebDAVAction
 {
     // Search depth at the destination path
-    private int depth;
+    private final int depth;
 
     // Resource result set
     private List<DavResource> resources;
@@ -58,40 +58,6 @@ public class WebDAVList extends AbstractWebDAVAction
     }
 
     /**
-     * Action with specific name listed in the results, based on a path
-     *
-     * @param timerName
-     *            Is used for naming this action in results
-     * @param relativePath
-     *            Resources relative source path related to your webdav directory
-     */
-    public WebDAVList(final String timerName, final String path)
-    {
-        super(timerName);
-
-        this.depth = 0;
-        this.path = getAbsoluteURL(path);
-    }
-    
-    /**
-     * Action with specific name listed in the results, based on a path
-     *
-     * @param timerName
-     *            Is used for naming this action in results
-     * @param relativePath
-     *            Resources relative source path related to your webdav directory
-     * @param depth
-     *            Depth of search (>= -1: -1 = infinity, 0 = single resource) maybe not supported by a server
-     */
-    public WebDAVList(final String timerName, final String path, final int depth)
-    {
-        super(timerName);
-
-        this.depth = depth;
-        this.path = getAbsoluteURL(path);
-    }
-
-    /**
      * Action with standard action name listed in the results, based on a resource object
      *
      * @param src
@@ -116,24 +82,6 @@ public class WebDAVList extends AbstractWebDAVAction
     public WebDAVList (final DavResource src, final int depth)
     {
         super();
-
-        this.depth = depth;
-        this.path = src.getHref().toString();
-    }
-
-    /**
-     * Action with specific name listed in the results, based on a resource object
-     *
-     * @param timerName
-     *            Is used for naming this action in results
-     * @param resourceSRC
-     *            Source DavResource object to perform this action
-     * @param depth
-     *            Depth of search (>= -1: -1 = infinity, 0 = single resource) maybe not supported by a server
-     */
-    public WebDAVList(final String timerName, final DavResource src, final int depth)
-    {
-        super(timerName);
 
         this.depth = depth;
         this.path = src.getHref().toString();

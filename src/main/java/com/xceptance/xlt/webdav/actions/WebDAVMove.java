@@ -35,23 +35,6 @@ public class WebDAVMove extends AbstractWebDAVAction
     }
 
     /**
-     * Action with specific name listed in the results, based on a path
-     *
-     * @param timerName
-     *            Is used for naming this action in results
-     * @param src
-     *            Resources relative source path related to your webdav directory
-     * @param dst
-     *            Resources relative destination path related to your webdav directory
-     */
-    public WebDAVMove(String timerName, String src, String dst)
-    {
-        super(timerName);
-        this.src = getAbsoluteURL(src);
-        this.dst = getAbsoluteURL(dst);
-    }
-
-    /**
      * Action with standard action name listed in the results, based on a resource object
      *
      * @param src
@@ -66,22 +49,6 @@ public class WebDAVMove extends AbstractWebDAVAction
         this.dst = getAbsoluteURL(dst);
     }
 
-    /**
-     * Action with specific name listed in the results, based on a resource object
-     *
-     * @param timerName
-     *            Is used for naming this action in results
-     * @param resourceSRC
-     *            Source DavResource object to perform this action
-     * @param relativePathDST
-     *            Resources relative destination path related to your webdav directory
-     */
-    public WebDAVMove(final String timerName, final DavResource src, final String dst)
-    {
-        super(timerName);
-        this.src = src.getHref().toString();
-        this.dst = getAbsoluteURL(dst);
-    }
     @Override
     public void preValidate() throws Exception
     {

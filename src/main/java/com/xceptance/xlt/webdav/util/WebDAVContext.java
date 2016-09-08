@@ -57,40 +57,4 @@ public abstract class WebDAVContext
 		}
         WebDAVContext.activeActions.put(Session.getCurrent().getUserID(), null);
     }
-
-    /**
-     * Sets a host name to the last created webdav action and all following ones
-     *
-     * @param hostName
-     *            Servers host name for expample "http://localhost/"
-     */
-    public static void setHostName(String hostName)
-    {
-        WebDAVContext.activeActions.get(Session.getCurrent().getUserID()).setHostName(hostName);
-    }
-
-    /**
-     * Sets a webdav home directory path to the last created webdav action and all following ones, otherwise the action
-     * uses "" You can also set your favorite path, to shorten your input relative path's
-     *
-     * @param webdavDir
-     *            Relative webdav home directory related to hostName, for example: "webdav/"
-     */
-    public static void setWebdavDir(String webDAVDir)
-    {
-        WebDAVContext.activeActions.get(Session.getCurrent().getUserID()).setWebDAVPath(webDAVDir);
-    }
-
-    /**
-     * Sets user credentials to the last created action and all following and on this way also to the sardine client
-     *
-     * @param userName
-     *            credential user name
-     * @param userPassword
-     *            credential user password
-     */
-    public static void setCredentials(String userName, String userPassword)
-    {
-        WebDAVContext.activeActions.get(Session.getCurrent().getUserID()).setCredentials(userName, userPassword);
-    }
 }

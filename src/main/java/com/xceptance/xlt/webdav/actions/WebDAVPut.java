@@ -34,27 +34,9 @@ public class WebDAVPut extends AbstractWebDAVAction
     public WebDAVPut(final String path, final byte[] fileContent)
     {
         super();
+        
         this.path = getAbsoluteURL(path);
         this.fileContent = fileContent;
-        this.inputStream = null;
-    }
-
-    /**
-     * Action with specific name listed in the results, based on a path and a byte array as source
-     * 
-     * @param timerName
-     *            Is used for naming this action in results
-     * @param relativePath
-     *            Files relative destination path related to your webdav directory
-     * @param file
-     *            byte array to perform upload
-     */
-    public WebDAVPut(final String timerName, final String path, byte[] fileContent)
-    {
-        super(timerName);
-
-        this.fileContent = fileContent;
-        this.path = getAbsoluteURL(path);
         this.inputStream = null;
     }
 
@@ -69,24 +51,7 @@ public class WebDAVPut extends AbstractWebDAVAction
     public WebDAVPut(final String path, final InputStream inputStream)
     {
         super();
-        this.fileContent = null;
-        this.path = getAbsoluteURL(path);
-        this.inputStream = inputStream;
-    }
-
-    /**
-     * Action with specific name listed in the results, based on a path and a input stream as source
-     * 
-     * @param timerName
-     *            Is used for naming this action in results
-     * @param relativePath
-     *            Files relative destination path related to your webdav directory
-     * @param file
-     *            InputStream to perform upload
-     */
-    public WebDAVPut(final String timerName, final String path, final InputStream inputStream)
-    {
-        super(timerName);
+        
         this.fileContent = null;
         this.path = getAbsoluteURL(path);
         this.inputStream = inputStream;

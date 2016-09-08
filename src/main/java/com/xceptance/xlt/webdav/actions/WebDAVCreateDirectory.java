@@ -28,20 +28,6 @@ public class WebDAVCreateDirectory extends AbstractWebDAVAction
         this.path = getAbsoluteURL(path);
     }
 
-    /**
-     * Action with specific name listed in the results, based on a path
-     *
-     * @param timerName
-     *            Is used for naming this action in results
-     * @param path
-     *            Directory's relative destination path relative to your webdav directory
-     */
-    public WebDAVCreateDirectory(final String timerName, final String path)
-    {
-        super(timerName);
-        this.path = getAbsoluteURL(path);
-    }
-
     @Override
     public void preValidate() throws Exception
     {

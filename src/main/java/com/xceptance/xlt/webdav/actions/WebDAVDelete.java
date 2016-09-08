@@ -30,20 +30,6 @@ public class WebDAVDelete extends AbstractWebDAVAction
     }
 
     /**
-     * Action with specific name listed in the results, based on a path
-     *
-     * @param timerName
-     *            Is used for naming this action in results
-     * @param path
-     *            Resources relative source path related to your webdav directory
-     */
-    public WebDAVDelete(final String timerName, final String path)
-    {
-        super(timerName);
-        this.path = getAbsoluteURL(path);
-    }
-
-    /**
      * Action with standard action name listed in the results, based on a resource object
      *
      * @param src

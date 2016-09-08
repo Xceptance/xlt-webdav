@@ -45,23 +45,6 @@ public class WebDAVGet extends AbstractWebDAVAction
     }
 
     /**
-     * Action with specific name listed in the results, based on a path
-     *
-     * @param timerName
-     *            Is used for naming this action in results
-     * @param path
-     *            Files relative source path related to your webdav directory
-     * @param store
-     * 				do we want to store the fetched content, true if yes, false otherwise 
-     */
-    public WebDAVGet(final String timerName, final String path, final boolean store)
-    {
-        super(timerName);
-        this.path = getAbsoluteURL(path);
-        this.store = store;
-    }
-
-    /**
      * Action with standard action name listed in the results, based on a resource object
      *
      * @param src
@@ -72,23 +55,6 @@ public class WebDAVGet extends AbstractWebDAVAction
     public WebDAVGet(final DavResource src, final boolean store)
     {
         super();
-        this.path = src.getHref().toString();
-        this.store = store;
-    }
-
-    /**
-     * Action with specific name listed in the results, based on a resource object
-     *
-     * @param timerName
-     *            Is used for naming this action in results
-     * @param resourceSRC
-     *            Source DavResource object to perform this action
-     * @param store
-     * 				do we want to store the fetched content, true if yes, false otherwise 
-     */
-    public WebDAVGet(final String timerName, final DavResource src, final boolean store)
-    {
-        super(timerName);
         this.path = src.getHref().toString();
         this.store = store;
     }
