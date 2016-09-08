@@ -18,7 +18,7 @@ import com.xceptance.xlt.webdav.util.WebDAVContext;
  *
  * @author Karsten Sommer (Xceptance Software Technologies GmbH)
  */
-public abstract class AbstractWebDAVAction extends AbstractAction
+public abstract class AbstractWebDAVAction<T> extends AbstractAction
 {
     // Sardine client returned by SardineFactory
     private Sardine sardine;
@@ -138,11 +138,11 @@ public abstract class AbstractWebDAVAction extends AbstractAction
      * 
      * @param newTimerName new time name
      */
-    public AbstractWebDAVAction timerName(final String newTimerName)
+    public T timerName(final String newTimerName)
     {
     	setTimerName(newTimerName);
     	
-    	return this;
+    	return (T) this;
     }
     
     /**

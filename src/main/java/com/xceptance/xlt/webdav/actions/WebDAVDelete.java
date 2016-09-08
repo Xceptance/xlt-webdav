@@ -12,7 +12,7 @@ import com.xceptance.xlt.webdav.validators.WebDavActionValidator;
  *
  * @author Karsten Sommer (Xceptance Software Technologies GmbH)
  */
-public class WebDAVDelete extends AbstractWebDAVAction
+public class WebDAVDelete extends AbstractWebDAVAction<WebDAVDelete>
 {
 	// our path to delete
 	private final String path;

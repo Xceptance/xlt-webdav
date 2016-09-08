@@ -11,7 +11,7 @@ import com.xceptance.xlt.webdav.validators.WebDavActionValidator;
  *
  * @author Karsten Sommer (Xceptance Software Technologies GmbH)
  */
-public class WebDAVCreateDirectory extends AbstractWebDAVAction
+public class WebDAVCreateDirectory extends AbstractWebDAVAction<WebDAVCreateDirectory>
 {
 	// the path to create
 	private final String path;

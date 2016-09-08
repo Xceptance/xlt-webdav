@@ -14,7 +14,7 @@ import com.xceptance.xlt.webdav.validators.WebDavActionValidator;
  *
  * @author Karsten Sommer (Xceptance Software Technologies GmbH)
  */
-public class WebDAVExists extends AbstractWebDAVAction
+public class WebDAVExists extends AbstractWebDAVAction<WebDAVExists>
 {
     // Expectation of resources existence
     private boolean exists;

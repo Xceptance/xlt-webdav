@@ -13,7 +13,7 @@ import com.xceptance.xlt.webdav.validators.WebDavActionValidator;
  *
  * @author Karsten Sommer (Xceptance Software Technologies GmbH)
  */
-public class WebDAVCopy extends AbstractWebDAVAction
+public class WebDAVCopy extends AbstractWebDAVAction<WebDAVCopy>
 {
     // source
     private final String src;

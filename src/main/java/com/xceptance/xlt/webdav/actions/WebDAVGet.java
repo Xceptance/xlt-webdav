@@ -18,7 +18,7 @@ import com.xceptance.xlt.webdav.validators.WebDavActionValidator;
  *
  * @author Karsten Sommer (Xceptance Software Technologies GmbH)
  */
-public class WebDAVGet extends AbstractWebDAVAction
+public class WebDAVGet extends AbstractWebDAVAction<WebDAVGet>
 {
 	// the path to fetch
 	private final String path;

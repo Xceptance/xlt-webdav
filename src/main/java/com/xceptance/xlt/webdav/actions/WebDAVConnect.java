@@ -14,7 +14,7 @@ import com.xceptance.xlt.webdav.validators.WebDavActionValidator;
  *
  * @author Karsten Sommer (Xceptance Software Technologies GmbH)
  */
-public class WebDAVConnect extends AbstractWebDAVAction
+public class WebDAVConnect extends AbstractWebDAVAction<WebDAVConnect>
 {
 	private boolean doesExist = false;
 	

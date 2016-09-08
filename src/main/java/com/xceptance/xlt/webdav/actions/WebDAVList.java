@@ -16,7 +16,7 @@ import com.xceptance.xlt.webdav.validators.WebDavActionValidator;
  *
  * @author Karsten Sommer (Xceptance Software Technologies GmbH)
  */
-public class WebDAVList extends AbstractWebDAVAction
+public class WebDAVList extends AbstractWebDAVAction<WebDAVList>
 {
     // Search depth at the destination path
     private final int depth;
@@ -111,7 +111,7 @@ public class WebDAVList extends AbstractWebDAVAction
      *
      * @return Result set
      */
-    public List<DavResource> getRessources()
+    public List<DavResource> getResources()
     {
         return this.resources;
     }

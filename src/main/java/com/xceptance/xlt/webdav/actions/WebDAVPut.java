@@ -12,7 +12,7 @@ import com.xceptance.xlt.webdav.validators.WebDavActionValidator;
  * Puts a given file to a destination by using WebDAV <code>PUT</code> by sardine.put. Can be used by relative path
  * which describes the destination an a byteArray or InputStream as source file.
  */
-public class WebDAVPut extends AbstractWebDAVAction
+public class WebDAVPut extends AbstractWebDAVAction<WebDAVPut>
 {
     // File data to perform upload
     private final byte[] fileContent;

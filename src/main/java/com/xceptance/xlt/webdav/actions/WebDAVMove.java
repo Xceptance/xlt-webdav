@@ -11,7 +11,7 @@ import com.xceptance.xlt.webdav.validators.WebDavActionValidator;
  * by a resource object provided by previously performed ListResources actions to perform a move operation to the
  * destination path.
  */
-public class WebDAVMove extends AbstractWebDAVAction
+public class WebDAVMove extends AbstractWebDAVAction<WebDAVMove>
 {
     // Relative path of actions source
     private final String src;
