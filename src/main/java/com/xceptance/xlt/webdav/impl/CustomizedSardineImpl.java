@@ -3,6 +3,7 @@ package com.xceptance.xlt.webdav.impl;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.ProxySelector;
+import java.text.MessageFormat;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.CredentialsProvider;
@@ -11,7 +12,9 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 
+import com.github.sardine.Sardine;
 import com.github.sardine.impl.SardineImpl;
+import com.xceptance.xlt.api.util.XltProperties;
 import com.xceptance.xlt.engine.XltDnsResolver;
 
 /**
@@ -129,6 +132,9 @@ public class CustomizedSardineImpl extends SardineImpl
         // now additionally set a custom DNS resolver to get DNS resolution times
         builder.setDnsResolver(new XltDnsResolver());
 
+        // configure a decent user agent name
+        builder.setUserAgent(MessageFormat.format("Sardine/{0} (Xceptance Load Test, XLT {1}, WebDAV)", com.github.sardine.Version.getImplementation(), XltProperties.getInstance().getVersion()));
+        
         return builder;
     }
 
