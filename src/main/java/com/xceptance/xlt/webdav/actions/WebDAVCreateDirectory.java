@@ -14,7 +14,7 @@ import com.xceptance.xlt.webdav.validators.WebDavActionValidator;
 public class WebDAVCreateDirectory extends AbstractWebDAVAction<WebDAVCreateDirectory>
 {
 	// the path to create
-	private final String path;
+	private final String url;
 	
     /**
      * Action with standard action name listed in the results, based on a path
@@ -25,7 +25,7 @@ public class WebDAVCreateDirectory extends AbstractWebDAVAction<WebDAVCreateDire
     public WebDAVCreateDirectory(final String path)
     {
         super();
-        this.path = getAbsoluteURL(path);
+        this.url = getURL(path);
     }
 
     @Override
@@ -37,7 +37,7 @@ public class WebDAVCreateDirectory extends AbstractWebDAVAction<WebDAVCreateDire
     @Override
     protected void execute() throws Exception
     {
-        this.getSardine().createDirectory(path);
+        this.getSardine().createDirectory(url);
     }
 
     @Override

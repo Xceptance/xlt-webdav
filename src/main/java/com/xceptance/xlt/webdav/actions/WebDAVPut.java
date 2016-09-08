@@ -21,7 +21,7 @@ public class WebDAVPut extends AbstractWebDAVAction<WebDAVPut>
     private final InputStream inputStream;
 
     // path to write to
-    private final String path;
+    private final String url;
     
     /**
      * Action with standard action name listed in the results, based on a path and a byte array as source
@@ -35,7 +35,7 @@ public class WebDAVPut extends AbstractWebDAVAction<WebDAVPut>
     {
         super();
         
-        this.path = getAbsoluteURL(path);
+        this.url = getURL(path);
         this.fileContent = fileContent;
         this.inputStream = null;
     }
@@ -53,7 +53,7 @@ public class WebDAVPut extends AbstractWebDAVAction<WebDAVPut>
         super();
         
         this.fileContent = null;
-        this.path = getAbsoluteURL(path);
+        this.url = getURL(path);
         this.inputStream = inputStream;
     }
 
@@ -72,11 +72,11 @@ public class WebDAVPut extends AbstractWebDAVAction<WebDAVPut>
         // Upload by InputStream
         if (this.inputStream != null)
         {
-            this.getSardine().put(path, this.inputStream);
+            this.getSardine().put(url, this.inputStream);
         }
         else
         {
-            this.getSardine().put(path, this.fileContent);
+            this.getSardine().put(url, this.fileContent);
         }
     }
 

@@ -2,11 +2,7 @@ package com.xceptance.xlt.webdav.actions;
 
 import org.junit.Assert;
 
-import com.github.sardine.DavResource;
 import com.xceptance.xlt.webdav.impl.AbstractWebDAVAction;
-import com.xceptance.xlt.webdav.validators.ResponseCodeValidator;
-import com.xceptance.xlt.webdav.validators.SourceDavResourceValidator;
-import com.xceptance.xlt.webdav.validators.WebDavActionValidator;
 
 /**
  * Checks if a resources path exists by using WebDAV <code>HEAD</code> by sardine.exists. Can be used by relative path
@@ -40,7 +36,7 @@ public class WebDAVConnect extends AbstractWebDAVAction<WebDAVConnect>
     protected void execute() throws Exception
     {
         // Responds http 404 in case of a non existing resource without SardineException
-        this.doesExist = getSardine().exists(getAbsoluteURL(""));
+        this.doesExist = getSardine().exists(getURL(""));
     }
 
     @Override

@@ -7,7 +7,6 @@ import org.apache.commons.io.IOUtils;
 import com.github.sardine.DavResource;
 import com.xceptance.xlt.webdav.impl.AbstractWebDAVAction;
 import com.xceptance.xlt.webdav.validators.ResponseCodeValidator;
-import com.xceptance.xlt.webdav.validators.SourceDavResourceValidator;
 import com.xceptance.xlt.webdav.validators.WebDavActionValidator;
 
 /**
@@ -21,7 +20,7 @@ import com.xceptance.xlt.webdav.validators.WebDavActionValidator;
 public class WebDAVGet extends AbstractWebDAVAction<WebDAVGet>
 {
 	// the path to fetch
-	private final String path;
+	private final String url;
 	
 	// File (available after performed action if flag is set)
     private byte[] fileContent;
@@ -40,7 +39,8 @@ public class WebDAVGet extends AbstractWebDAVAction<WebDAVGet>
     public WebDAVGet(final String path, final boolean store)
     {
         super();
-        this.path = getAbsoluteURL(path);
+        
+        this.url = getURL(path);
         this.store = store;
     }
 
@@ -55,7 +55,7 @@ public class WebDAVGet extends AbstractWebDAVAction<WebDAVGet>
     public WebDAVGet(final DavResource src, final boolean store)
     {
         super();
-        this.path = src.getHref().toString();
+        this.url = getURL(src);
         this.store = store;
     }
 
@@ -63,13 +63,12 @@ public class WebDAVGet extends AbstractWebDAVAction<WebDAVGet>
     public void preValidate() throws Exception
     {
         WebDavActionValidator.validate(this);
-        SourceDavResourceValidator.validate(this);
     }
 
     @Override
     protected void execute() throws Exception
     {
-        try (final InputStream is = getSardine().get(path))
+        try (final InputStream is = getSardine().get(url))
         {
         	if (store)
         	{

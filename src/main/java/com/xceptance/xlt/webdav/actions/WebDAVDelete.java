@@ -3,7 +3,6 @@ package com.xceptance.xlt.webdav.actions;
 import com.github.sardine.DavResource;
 import com.xceptance.xlt.webdav.impl.AbstractWebDAVAction;
 import com.xceptance.xlt.webdav.validators.ResponseCodeValidator;
-import com.xceptance.xlt.webdav.validators.SourceDavResourceValidator;
 import com.xceptance.xlt.webdav.validators.WebDavActionValidator;
 
 /**
@@ -15,7 +14,7 @@ import com.xceptance.xlt.webdav.validators.WebDavActionValidator;
 public class WebDAVDelete extends AbstractWebDAVAction<WebDAVDelete>
 {
 	// our path to delete
-	private final String path;
+	private final String url;
 	
     /**
      * Action with standard action name listed in the results, based on a path
@@ -26,7 +25,7 @@ public class WebDAVDelete extends AbstractWebDAVAction<WebDAVDelete>
     public WebDAVDelete(final String path)
     {
         super();
-        this.path = getAbsoluteURL(path);
+        this.url = getURL(path);
     }
 
     /**
@@ -38,34 +37,19 @@ public class WebDAVDelete extends AbstractWebDAVAction<WebDAVDelete>
     public WebDAVDelete(final DavResource src)
     {
         super();
-        path = src.getHref().toString();
-    }
-
-    /**
-     * Action with specific name listed in the results, based on a resource object
-     *
-     * @param timerName
-     *            Is used for naming this action in results
-     * @param src
-     *            Source DavResource object to perform this action
-     */
-    public WebDAVDelete(final String timerName, final DavResource src)
-    {
-        super(timerName);
-        path = src.getHref().toString();
+        this.url = getURL(src); 
     }
 
     @Override
     public void preValidate() throws Exception
     {
         WebDavActionValidator.validate(this);
-        SourceDavResourceValidator.validate(this);
     }
 
     @Override
     protected void execute() throws Exception
     {
-        this.getSardine().delete(path);
+        this.getSardine().delete(url);
     }
 
     @Override

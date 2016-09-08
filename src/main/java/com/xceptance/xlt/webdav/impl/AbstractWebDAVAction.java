@@ -138,7 +138,8 @@ public abstract class AbstractWebDAVAction<T> extends AbstractAction
      * 
      * @param newTimerName new time name
      */
-    public T timerName(final String newTimerName)
+    @SuppressWarnings("unchecked")
+	public T timerName(final String newTimerName)
     {
     	setTimerName(newTimerName);
     	
@@ -222,7 +223,7 @@ public abstract class AbstractWebDAVAction<T> extends AbstractAction
      * @param relativePath the relative path to append
      * @return absolute url
      */
-	public String getAbsoluteURL(final String relativePath)
+	public String getURL(final String relativePath)
     {    	
     	// build us a new valid url
     	final StringBuilder url = new StringBuilder(256);
@@ -240,7 +241,26 @@ public abstract class AbstractWebDAVAction<T> extends AbstractAction
     	
     	return url.toString();
     }
-    
+
+    /**
+     * Returns the full absolute url of the current state
+     * 
+     * @param resource the dav resource to create the url from
+     * @return absolute url
+     */
+	public String getURL(final DavResource resource)
+    {    	
+    	// build us a new valid url
+    	final StringBuilder url = new StringBuilder(256);
+    	
+    	// hostname first, strip /
+    	url.append(StringUtils.stripEnd(this.hostName, "/"));
+    	url.append("/");
+    	url.append(StringUtils.stripStart(resource.getPath(), "/"));
+
+    	return url.toString();
+    }
+	
     /**
      * Sardine client shutdown and release (implicit given by WebdavContext's clean method) which must to be used at the
      * end of your testcase

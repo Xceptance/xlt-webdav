@@ -5,7 +5,6 @@ import org.junit.Assert;
 import com.github.sardine.DavResource;
 import com.xceptance.xlt.webdav.impl.AbstractWebDAVAction;
 import com.xceptance.xlt.webdav.validators.ResponseCodeValidator;
-import com.xceptance.xlt.webdav.validators.SourceDavResourceValidator;
 import com.xceptance.xlt.webdav.validators.WebDavActionValidator;
 
 /**
@@ -23,7 +22,7 @@ public class WebDAVExists extends AbstractWebDAVAction<WebDAVExists>
     private boolean doesExist = false;
 
     // the path to check
-    private final String path;
+    private final String url;
     
     /**
      * Action with standard action name listed in the results, based on a path
@@ -38,37 +37,36 @@ public class WebDAVExists extends AbstractWebDAVAction<WebDAVExists>
         super();
         
         this.exists = exists;
-        path = getAbsoluteURL(relativePath);
+        this.url = getURL(relativePath);
     }
 
     /**
      * Action with standard action name listed in the results, based on a resource object
      *
-     * @param resourceSRC
+     * @param src
      *            Source DavResource object to perform this action
-     * @param expectation
+     * @param exists
      *            Expected state of resources existence
      */
-    public WebDAVExists(DavResource davResource, boolean exists)
+    public WebDAVExists(final DavResource src, final boolean exists)
     {
         super();
 
         this.exists = exists;
-        path = davResource.getHref().toString(); 
+        this.url = getURL(src); 
     }
 
     @Override
     public void preValidate() throws Exception
     {
         WebDavActionValidator.validate(this);
-        SourceDavResourceValidator.validate(this);
     }
 
     @Override
     protected void execute() throws Exception
     {
         // Responds http 404 in case of a non existing resource without SardineException
-        this.doesExist = getSardine().exists(path);
+        this.doesExist = getSardine().exists(url);
     }
 
     @Override

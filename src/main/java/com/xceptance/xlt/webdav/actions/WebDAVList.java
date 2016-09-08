@@ -25,7 +25,7 @@ public class WebDAVList extends AbstractWebDAVAction<WebDAVList>
     private List<DavResource> resources;
 
     // the path to get
-    private final String path;
+    private final String url;
     
     /**
      * Action with standard action name listed in the results, based on a path
@@ -38,7 +38,7 @@ public class WebDAVList extends AbstractWebDAVAction<WebDAVList>
         super();
 
         this.depth = 0;
-        this.path = getAbsoluteURL(path);
+        this.url = getURL(path);
     }
     
     /**
@@ -54,7 +54,7 @@ public class WebDAVList extends AbstractWebDAVAction<WebDAVList>
         super();
 
         this.depth = depth;
-        this.path = getAbsoluteURL(path);
+        this.url = getURL(path);
     }
 
     /**
@@ -68,7 +68,7 @@ public class WebDAVList extends AbstractWebDAVAction<WebDAVList>
         super();
 
         this.depth = 0;
-        this.path = src.getHref().toString();
+        this.url = getURL(src);
     }
     
     /**
@@ -84,7 +84,7 @@ public class WebDAVList extends AbstractWebDAVAction<WebDAVList>
         super();
 
         this.depth = depth;
-        this.path = src.getHref().toString();
+        this.url = getURL(src);
     }
 
     @Override
@@ -96,7 +96,7 @@ public class WebDAVList extends AbstractWebDAVAction<WebDAVList>
     @Override
     protected void execute() throws Exception
     {
-        this.resources = this.getSardine().list(path, depth, false);
+        this.resources = this.getSardine().list(url, depth, false);
     }
 
     @Override

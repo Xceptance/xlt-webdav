@@ -3,7 +3,6 @@ package com.xceptance.xlt.webdav.actions;
 import com.github.sardine.DavResource;
 import com.xceptance.xlt.webdav.impl.AbstractWebDAVAction;
 import com.xceptance.xlt.webdav.validators.ResponseCodeValidator;
-import com.xceptance.xlt.webdav.validators.SourceDavResourceValidator;
 import com.xceptance.xlt.webdav.validators.WebDavActionValidator;
 
 /**
@@ -16,10 +15,10 @@ import com.xceptance.xlt.webdav.validators.WebDavActionValidator;
 public class WebDAVCopy extends AbstractWebDAVAction<WebDAVCopy>
 {
     // source
-    private final String src;
+    private final String srcURL;
 
     // destination
-    private final String dst;
+    private final String dstURL;
 
     /**
      * Action with standard action name listed in the results, based on a path
@@ -33,8 +32,8 @@ public class WebDAVCopy extends AbstractWebDAVAction<WebDAVCopy>
     {
         super();
 
-        this.src = getAbsoluteURL(src);
-        this.dst = getAbsoluteURL(dst);
+        this.srcURL = getURL(src);
+        this.dstURL = getURL(dst);
     }
 
     /**
@@ -49,21 +48,20 @@ public class WebDAVCopy extends AbstractWebDAVAction<WebDAVCopy>
     {
         super();
 
-        this.src = src.getHref().toString();
-        this.dst = getAbsoluteURL(dst);
+        this.srcURL = getURL(src);
+        this.dstURL = getURL(dst);
     }
  
     @Override
     public void preValidate() throws Exception
     {
         WebDavActionValidator.validate(this);
-        SourceDavResourceValidator.validate(this);
     }
 
     @Override
     protected void execute() throws Exception
     {
-        this.getSardine().copy(src, dst);
+        this.getSardine().copy(srcURL, dstURL);
     }
 
     @Override
