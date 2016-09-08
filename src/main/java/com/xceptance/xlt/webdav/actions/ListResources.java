@@ -5,7 +5,6 @@ import java.util.List;
 import com.github.sardine.DavResource;
 import com.xceptance.xlt.webdav.impl.AbstractWebDAVAction;
 import com.xceptance.xlt.webdav.validators.ResponseCodeValidator;
-import com.xceptance.xlt.webdav.validators.SourceDavResourceValidator;
 import com.xceptance.xlt.webdav.validators.WebDavActionValidator;
 
 /**
@@ -144,7 +143,6 @@ public class ListResources extends AbstractWebDAVAction
     public void preValidate() throws Exception
     {
         WebDavActionValidator.validate(this);
-        SourceDavResourceValidator.validate(this);
     }
 
     @Override

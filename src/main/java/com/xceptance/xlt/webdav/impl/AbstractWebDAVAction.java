@@ -44,9 +44,6 @@ public abstract class AbstractWebDAVAction extends AbstractAction
     // Http content type
     private String httpContentType;
 
-	// shall we automatically url encode the path info?
-    private boolean autoURLEncoding = true;
-    
     // Request data for analytic purpose
     private RequestData requestData;
 
@@ -56,6 +53,23 @@ public abstract class AbstractWebDAVAction extends AbstractAction
     // the DavResource returned by this action, if any
     private DavResource response;
 
+    /**
+     * Initial setup method for first connect to consume the basics
+     * datapoints
+     */
+    protected AbstractWebDAVAction(String hostname, String webDAVPath, String username, String password)
+    {
+    	super(null, null);
+    	
+    	this.hostName = hostname;
+    	this.webDAVPath = webDAVPath;
+    	this.userName = username;
+    	this.userPassword = password;
+    	
+        initialisation();
+        WebDAVContext.setActiveAction(this);
+    }
+    
     /**
      * Basic constructor for actions without specific named results
      */
@@ -108,6 +122,7 @@ public abstract class AbstractWebDAVAction extends AbstractAction
         {
             // Creates configured sardine client
             this.sardine = new CustomizedSardineImpl();
+            this.getSardine().setCredentials(userName, userPassword);
         }
 
         // Initialisation of response values
@@ -149,22 +164,6 @@ public abstract class AbstractWebDAVAction extends AbstractAction
     }
 
     /**
-     * Sets user credentials to this actions and sardine client Will also be used from all following actions by taking
-     * use of WebdavContext and the constructor of the following action
-     *
-     * @param userName
-     *            Credential user name
-     * @param userPassword
-     *            Credential user password
-     */
-    public void setCredentials(String userName, String userPassword)
-    {
-        this.userName = userName;
-        this.userPassword = userPassword;
-        this.getSardine().setCredentials(userName, userPassword);
-    }
-
-    /**
      * @return Host name of webdav server
      */
     public String getHostName()
@@ -178,7 +177,7 @@ public abstract class AbstractWebDAVAction extends AbstractAction
      * @param hostName
      *            Servers host name for example: "http://localhost/"
      */
-    public void setHostName(String hostName)
+    private void setHostName(String hostName)
     {
         this.hostName = hostName;
     }
@@ -189,6 +188,18 @@ public abstract class AbstractWebDAVAction extends AbstractAction
     public String getWebDAVPath()
     {
         return this.webDAVPath;
+    }
+    
+    /**
+     * Sets your webdav home directory path if used, otherwise use "" you can also set your favorite path, to shorten
+     * your input relativePath's
+     *
+     * @param webdavDir
+     *            Relative webdav home directory related to hostname, for example: "webdav/"
+     */
+    private void setWebDAVPath(String webDAVPath)
+    {
+        this.webDAVPath = webDAVPath;
     }
     
     /**
@@ -210,36 +221,12 @@ public abstract class AbstractWebDAVAction extends AbstractAction
     	path.append(StringUtils.strip(this.webDAVPath, "/"));
     	path.append("/");
     	path.append(StringUtils.stripStart(relativePath, "/"));
-    	
-    	// shall we encode the path?
-    	try 
-    	{
-			if (autoURLEncoding)
-			{
-				url.append(URLEncoder.encode(path.toString(), "UTF-8"));
-			}
-		} 
-    	catch (UnsupportedEncodingException e) 
-    	{
-    		// unlikely!
-			url.append(URLEncoder.encode(path.toString()));
-		}
+
+    	url.append(path);
     	
     	return url.toString();
     }
     
-    /**
-     * Sets your webdav home directory path if used, otherwise use "" you can also set your favorite path, to shorten
-     * your input relativePath's
-     *
-     * @param webdavDir
-     *            Relative webdav home directory related to hostname, for example: "webdav/"
-     */
-    public void setWebDAVPath(String webDAVPath)
-    {
-        this.webDAVPath = webDAVPath;
-    }
-
     /**
      * Sardine client shutdown and release (implicit given by WebdavContext's clean method) which must to be used at the
      * end of your testcase
@@ -309,27 +296,6 @@ public abstract class AbstractWebDAVAction extends AbstractAction
     {
         return this.response;
     }
-
-    /**
-     * Returns whether or not we want to auto encode the pathinfo correctly.
-     * Set this to false if you input encoded path information
-     * @return true if auto path encoding is one, false otherwise
-     */
-    public boolean isAutoURLEncoding() 
-    {
-		return autoURLEncoding;
-	}
-
-    /**
-     * Turn on or off automatic url encoding of the path. It is on by
-     * default and has to be disabled if not desired.  
-     * 
-     * @param autoURLEncoding
-     */
-	public void setAutoURLEncoding(boolean autoURLEncoding) 
-	{
-		this.autoURLEncoding = autoURLEncoding;
-	}
 
 	/**
 	 * Returns the last response code. Will return -1 if no execution has 
