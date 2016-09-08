@@ -1,9 +1,10 @@
 package com.xceptance.xlt.webdav.impl;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLEncoder;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -250,7 +251,7 @@ public abstract class AbstractWebDAVAction<T> extends AbstractAction
 
     	url.append(path);
     	
-    	return url.toString();
+    	return urlEncode(url.toString());
     }
 
     /**
@@ -269,8 +270,34 @@ public abstract class AbstractWebDAVAction<T> extends AbstractAction
     	url.append("/");
     	url.append(StringUtils.stripStart(resource.getPath(), "/"));
 
-    	return url.toString();
+    	return urlEncode(url.toString());
     }
+	
+	/**
+	 * Sardine needs encoded urls, but returns decoded, odd, but this requires that
+	 * we split the url, encode and put it back together. This routine does 
+	 * 
+	 * @param path the full url to sanitize
+	 * @return an encoded path
+	 * @throws MalformedURLException 
+	 * @throws URISyntaxException 
+	 */
+	private String urlEncode(final String url)
+	{
+		try
+		{
+			final URL u = new URL(url);
+			final URI uri = new URI(u.getProtocol(), u.getUserInfo(), u.getHost(), u.getPort(), u.getPath(), u.getQuery(), u.getRef());
+
+			return uri.toURL().toString();
+		} 
+		catch (MalformedURLException | URISyntaxException e)
+		{
+			// turn this into a runtime exception so we don't have to do the catch it 
+			// craziness everywhere, bad is bad for the surrounding code
+			throw new RuntimeException(e);
+		}
+	}
 	
     /**
      * Sardine client shutdown and release (implicit given by WebdavContext's clean method) which must to be used at the
