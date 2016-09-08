@@ -11,6 +11,7 @@ import com.github.sardine.DavResource;
 import com.github.sardine.Sardine;
 import com.xceptance.xlt.api.actions.AbstractAction;
 import com.xceptance.xlt.api.engine.RequestData;
+import com.xceptance.xlt.api.util.XltProperties;
 import com.xceptance.xlt.webdav.util.WebDAVContext;
 
 /**
@@ -123,6 +124,16 @@ public abstract class AbstractWebDAVAction<T> extends AbstractAction
             // Creates configured sardine client
             this.sardine = new CustomizedSardineImpl();
             this.getSardine().setCredentials(userName, userPassword);
+            
+            // ok, let us see if gzip is desired
+            if (XltProperties.getInstance().getProperty("com.xceptance.xlt.http.gzip", true))
+            {
+            	this.sardine.enableCompression();
+            }
+            else
+            {
+            	this.sardine.disableCompression();
+            }
         }
 
         // Initialisation of response values
