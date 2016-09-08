@@ -18,7 +18,7 @@ import com.xceptance.xlt.webdav.validators.WebDavActionValidator;
  *
  * @author Karsten Sommer (Xceptance Software Technologies GmbH)
  */
-public class GetFile extends AbstractWebDAVAction
+public class WebDAVGet extends AbstractWebDAVAction
 {
 	// the path to fetch
 	private final String path;
@@ -37,7 +37,7 @@ public class GetFile extends AbstractWebDAVAction
      * @param store
      * 				do we want to store the fetched content, true if yes, false otherwise 
      */
-    public GetFile(final String path, final boolean store)
+    public WebDAVGet(final String path, final boolean store)
     {
         super();
         this.path = getAbsoluteURL(path);
@@ -54,7 +54,7 @@ public class GetFile extends AbstractWebDAVAction
      * @param store
      * 				do we want to store the fetched content, true if yes, false otherwise 
      */
-    public GetFile(final String timerName, final String path, final boolean store)
+    public WebDAVGet(final String timerName, final String path, final boolean store)
     {
         super(timerName);
         this.path = getAbsoluteURL(path);
@@ -69,7 +69,7 @@ public class GetFile extends AbstractWebDAVAction
      * @param store
      * 				do we want to store the fetched content, true if yes, false otherwise 
      */
-    public GetFile(final DavResource src, final boolean store)
+    public WebDAVGet(final DavResource src, final boolean store)
     {
         super();
         this.path = src.getHref().toString();
@@ -86,7 +86,7 @@ public class GetFile extends AbstractWebDAVAction
      * @param store
      * 				do we want to store the fetched content, true if yes, false otherwise 
      */
-    public GetFile(final String timerName, final DavResource src, final boolean store)
+    public WebDAVGet(final String timerName, final DavResource src, final boolean store)
     {
         super(timerName);
         this.path = src.getHref().toString();

@@ -16,7 +16,7 @@ import com.xceptance.xlt.webdav.validators.WebDavActionValidator;
  *
  * @author Karsten Sommer (Xceptance Software Technologies GmbH)
  */
-public class ListResources extends AbstractWebDAVAction
+public class WebDAVList extends AbstractWebDAVAction
 {
     // Search depth at the destination path
     private int depth;
@@ -33,7 +33,7 @@ public class ListResources extends AbstractWebDAVAction
      * @param path
      *            Resources relative source path related to your webdav directory
      */
-    public ListResources(final String path)
+    public WebDAVList(final String path)
     {
         super();
 
@@ -49,7 +49,7 @@ public class ListResources extends AbstractWebDAVAction
      * @param depth
      *            Depth of search (>= -1: -1 = infinity, 0 = single resource) maybe not supported by a server
      */
-    public ListResources(final String path, final int depth)
+    public WebDAVList(final String path, final int depth)
     {
         super();
 
@@ -65,7 +65,7 @@ public class ListResources extends AbstractWebDAVAction
      * @param relativePath
      *            Resources relative source path related to your webdav directory
      */
-    public ListResources(final String timerName, final String path)
+    public WebDAVList(final String timerName, final String path)
     {
         super(timerName);
 
@@ -83,7 +83,7 @@ public class ListResources extends AbstractWebDAVAction
      * @param depth
      *            Depth of search (>= -1: -1 = infinity, 0 = single resource) maybe not supported by a server
      */
-    public ListResources(final String timerName, final String path, final int depth)
+    public WebDAVList(final String timerName, final String path, final int depth)
     {
         super(timerName);
 
@@ -97,7 +97,7 @@ public class ListResources extends AbstractWebDAVAction
      * @param src
      *            Source DavResource object to perform this action
      */
-    public ListResources(final DavResource src)
+    public WebDAVList(final DavResource src)
     {
         super();
 
@@ -113,7 +113,7 @@ public class ListResources extends AbstractWebDAVAction
      * @param depth
      *            Depth of search (>= -1: -1 = infinity, 0 = single resource) maybe not supported by a server
      */
-    public ListResources (final DavResource src, final int depth)
+    public WebDAVList (final DavResource src, final int depth)
     {
         super();
 
@@ -131,7 +131,7 @@ public class ListResources extends AbstractWebDAVAction
      * @param depth
      *            Depth of search (>= -1: -1 = infinity, 0 = single resource) maybe not supported by a server
      */
-    public ListResources(final String timerName, final DavResource src, final int depth)
+    public WebDAVList(final String timerName, final DavResource src, final int depth)
     {
         super(timerName);
 

@@ -11,7 +11,7 @@ import com.xceptance.xlt.webdav.validators.WebDavActionValidator;
  * by a resource object provided by previously performed ListResources actions to perform a move operation to the
  * destination path.
  */
-public class MoveResource extends AbstractWebDAVAction
+public class WebDAVMove extends AbstractWebDAVAction
 {
     // Relative path of actions source
     private final String src;
@@ -27,7 +27,7 @@ public class MoveResource extends AbstractWebDAVAction
      * @param dst
      *            Resources relative destination path related to your webdav directory
      */
-    public MoveResource(final String src, final String dst)
+    public WebDAVMove(final String src, final String dst)
     {
         super();
         this.src = getAbsoluteURL(src);
@@ -44,7 +44,7 @@ public class MoveResource extends AbstractWebDAVAction
      * @param dst
      *            Resources relative destination path related to your webdav directory
      */
-    public MoveResource(String timerName, String src, String dst)
+    public WebDAVMove(String timerName, String src, String dst)
     {
         super(timerName);
         this.src = getAbsoluteURL(src);
@@ -59,7 +59,7 @@ public class MoveResource extends AbstractWebDAVAction
      * @param dst
      *            Resources relative destination path related to your webdav directory
      */
-    public MoveResource(final DavResource src, final String dst)
+    public WebDAVMove(final DavResource src, final String dst)
     {
         super();
         this.src = src.getHref().toString();
@@ -76,7 +76,7 @@ public class MoveResource extends AbstractWebDAVAction
      * @param relativePathDST
      *            Resources relative destination path related to your webdav directory
      */
-    public MoveResource(final String timerName, final DavResource src, final String dst)
+    public WebDAVMove(final String timerName, final DavResource src, final String dst)
     {
         super(timerName);
         this.src = src.getHref().toString();

@@ -12,7 +12,7 @@ import com.xceptance.xlt.webdav.validators.WebDavActionValidator;
  *
  * @author Karsten Sommer (Xceptance Software Technologies GmbH)
  */
-public class DeleteResource extends AbstractWebDAVAction
+public class WebDAVDelete extends AbstractWebDAVAction
 {
 	// our path to delete
 	private final String path;
@@ -23,7 +23,7 @@ public class DeleteResource extends AbstractWebDAVAction
      * @param relativePath
      *            Resources relative source path related to your webdav directory
      */
-    public DeleteResource(final String path)
+    public WebDAVDelete(final String path)
     {
         super();
         this.path = getAbsoluteURL(path);
@@ -37,7 +37,7 @@ public class DeleteResource extends AbstractWebDAVAction
      * @param path
      *            Resources relative source path related to your webdav directory
      */
-    public DeleteResource(final String timerName, final String path)
+    public WebDAVDelete(final String timerName, final String path)
     {
         super(timerName);
         this.path = getAbsoluteURL(path);
@@ -49,7 +49,7 @@ public class DeleteResource extends AbstractWebDAVAction
      * @param src
      *            Source DavResource object to perform this action
      */
-    public DeleteResource(final DavResource src)
+    public WebDAVDelete(final DavResource src)
     {
         super();
         path = src.getHref().toString();
@@ -63,7 +63,7 @@ public class DeleteResource extends AbstractWebDAVAction
      * @param src
      *            Source DavResource object to perform this action
      */
-    public DeleteResource(final String timerName, final DavResource src)
+    public WebDAVDelete(final String timerName, final DavResource src)
     {
         super(timerName);
         path = src.getHref().toString();

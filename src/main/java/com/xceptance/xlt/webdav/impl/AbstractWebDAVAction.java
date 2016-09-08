@@ -132,6 +132,20 @@ public abstract class AbstractWebDAVAction extends AbstractAction
     }
 
     /**
+     * Sets a timer name in a pseudo functional way to avoid
+     * too many constructors. There is already a method setTimerName
+     * but it is void, hence not simple to use.
+     * 
+     * @param newTimerName new time name
+     */
+    public AbstractWebDAVAction timerName(final String newTimerName)
+    {
+    	setTimerName(newTimerName);
+    	
+    	return this;
+    }
+    
+    /**
      * @return Previously performed action
      */
     public AbstractWebDAVAction getPreviousAction()

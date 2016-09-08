@@ -11,7 +11,7 @@ import com.xceptance.xlt.webdav.validators.WebDavActionValidator;
  *
  * @author Karsten Sommer (Xceptance Software Technologies GmbH)
  */
-public class CreateDirectory extends AbstractWebDAVAction
+public class WebDAVCreateDirectory extends AbstractWebDAVAction
 {
 	// the path to create
 	private final String path;
@@ -22,7 +22,7 @@ public class CreateDirectory extends AbstractWebDAVAction
      * @param path
      *            Directory's relative destination path relative to your webdav directory
      */
-    public CreateDirectory(final String path)
+    public WebDAVCreateDirectory(final String path)
     {
         super();
         this.path = getAbsoluteURL(path);
@@ -36,7 +36,7 @@ public class CreateDirectory extends AbstractWebDAVAction
      * @param path
      *            Directory's relative destination path relative to your webdav directory
      */
-    public CreateDirectory(final String timerName, final String path)
+    public WebDAVCreateDirectory(final String timerName, final String path)
     {
         super(timerName);
         this.path = getAbsoluteURL(path);

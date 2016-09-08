@@ -14,7 +14,7 @@ import com.xceptance.xlt.webdav.validators.WebDavActionValidator;
  *
  * @author Karsten Sommer (Xceptance Software Technologies GmbH)
  */
-public class CheckResourcePath extends AbstractWebDAVAction
+public class WebDAVExists extends AbstractWebDAVAction
 {
     // Expectation of resources existence
     private boolean exists;
@@ -33,7 +33,7 @@ public class CheckResourcePath extends AbstractWebDAVAction
      * @param exists
      *            Expected state of resources existence
      */
-    public CheckResourcePath(String relativePath, boolean exists)
+    public WebDAVExists(String relativePath, boolean exists)
     {
         super();
         
@@ -51,7 +51,7 @@ public class CheckResourcePath extends AbstractWebDAVAction
      * @param expectation
      *            Expected state of resources existence
      */
-    public CheckResourcePath(String timerName, String relativePath, boolean exists)
+    public WebDAVExists(String timerName, String relativePath, boolean exists)
     {
         super(timerName);
 
@@ -67,7 +67,7 @@ public class CheckResourcePath extends AbstractWebDAVAction
      * @param expectation
      *            Expected state of resources existence
      */
-    public CheckResourcePath(DavResource davResource, boolean exists)
+    public WebDAVExists(DavResource davResource, boolean exists)
     {
         super();
 
@@ -85,7 +85,7 @@ public class CheckResourcePath extends AbstractWebDAVAction
      * @param expectation
      *            Expected state of resources existence
      */
-    public CheckResourcePath(String timerName, DavResource davResource, boolean exists)
+    public WebDAVExists(String timerName, DavResource davResource, boolean exists)
     {
         super(timerName);
         

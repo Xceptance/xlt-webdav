@@ -12,7 +12,7 @@ import com.xceptance.xlt.webdav.validators.WebDavActionValidator;
  * Puts a given file to a destination by using WebDAV <code>PUT</code> by sardine.put. Can be used by relative path
  * which describes the destination an a byteArray or InputStream as source file.
  */
-public class PutFile extends AbstractWebDAVAction
+public class WebDAVPut extends AbstractWebDAVAction
 {
     // File data to perform upload
     private final byte[] fileContent;
@@ -31,7 +31,7 @@ public class PutFile extends AbstractWebDAVAction
      * @param file
      *            Byte array to perform upload
      */
-    public PutFile(final String path, final byte[] fileContent)
+    public WebDAVPut(final String path, final byte[] fileContent)
     {
         super();
         this.path = getAbsoluteURL(path);
@@ -49,7 +49,7 @@ public class PutFile extends AbstractWebDAVAction
      * @param file
      *            byte array to perform upload
      */
-    public PutFile(final String timerName, final String path, byte[] fileContent)
+    public WebDAVPut(final String timerName, final String path, byte[] fileContent)
     {
         super(timerName);
 
@@ -66,7 +66,7 @@ public class PutFile extends AbstractWebDAVAction
      * @param inputStream
      *            InputStream to perform upload
      */
-    public PutFile(final String path, final InputStream inputStream)
+    public WebDAVPut(final String path, final InputStream inputStream)
     {
         super();
         this.fileContent = null;
@@ -84,7 +84,7 @@ public class PutFile extends AbstractWebDAVAction
      * @param file
      *            InputStream to perform upload
      */
-    public PutFile(final String timerName, final String path, final InputStream inputStream)
+    public WebDAVPut(final String timerName, final String path, final InputStream inputStream)
     {
         super(timerName);
         this.fileContent = null;

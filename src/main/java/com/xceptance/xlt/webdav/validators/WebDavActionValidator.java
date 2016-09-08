@@ -3,8 +3,8 @@ package com.xceptance.xlt.webdav.validators;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 
-import com.xceptance.xlt.webdav.actions.CheckResourcePath;
-import com.xceptance.xlt.webdav.actions.ListResources;
+import com.xceptance.xlt.webdav.actions.WebDAVExists;
+import com.xceptance.xlt.webdav.actions.WebDAVList;
 import com.xceptance.xlt.webdav.impl.AbstractWebDAVAction;
 
 /**

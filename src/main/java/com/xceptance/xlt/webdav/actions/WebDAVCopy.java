@@ -13,7 +13,7 @@ import com.xceptance.xlt.webdav.validators.WebDavActionValidator;
  *
  * @author Karsten Sommer (Xceptance Software Technologies GmbH)
  */
-public class CopyResource extends AbstractWebDAVAction
+public class WebDAVCopy extends AbstractWebDAVAction
 {
     // source
     private String src;
@@ -29,7 +29,7 @@ public class CopyResource extends AbstractWebDAVAction
      * @param dst
      *            Resources relative destination path related to your webdav directory
      */
-    public CopyResource(String src, String dst)
+    public WebDAVCopy(String src, String dst)
     {
         super();
 
@@ -47,7 +47,7 @@ public class CopyResource extends AbstractWebDAVAction
      * @param dst
      *            Resources relative destination path related to your webdav directory
      */
-    public CopyResource(String timerName, String src, String dst)
+    public WebDAVCopy(String timerName, String src, String dst)
     {
         super(timerName);
 
@@ -63,7 +63,7 @@ public class CopyResource extends AbstractWebDAVAction
      * @param dst
      *            Resources relative destination path related to your webdav directory
      */
-    public CopyResource(DavResource src, String dst)
+    public WebDAVCopy(DavResource src, String dst)
     {
         super();
 
@@ -81,7 +81,7 @@ public class CopyResource extends AbstractWebDAVAction
      * @param dst
      *            Resources relative destination path related to your webdav directory
      */
-    public CopyResource(String timerName, DavResource src, String dst)
+    public WebDAVCopy(String timerName, DavResource src, String dst)
     {
         super(timerName);
 
