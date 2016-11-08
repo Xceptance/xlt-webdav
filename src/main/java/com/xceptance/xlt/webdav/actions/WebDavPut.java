@@ -4,88 +4,102 @@ import java.io.InputStream;
 
 import org.junit.Assert;
 
-import com.xceptance.xlt.webdav.impl.AbstractWebDAVAction;
-import com.xceptance.xlt.webdav.validators.ResponseCodeValidator;
+import com.xceptance.xlt.webdav.impl.AbstractWebDavAction;
+import com.xceptance.xlt.webdav.validators.StatusCodeValidator;
 import com.xceptance.xlt.webdav.validators.WebDavActionValidator;
 
 /**
  * Puts a given file to a destination by using WebDAV <code>PUT</code> by sardine.put. Can be used by relative path
  * which describes the destination an a byteArray or InputStream as source file.
  */
-public class WebDAVPut extends AbstractWebDAVAction<WebDAVPut>
+public class WebDavPut extends AbstractWebDavAction<WebDavPut>
 {
-    // File data to perform upload
+    /**
+     * File data to perform upload
+     */
     private final byte[] fileContent;
 
-    // alternative source
+    /**
+     * alternative source
+     */
     private final InputStream inputStream;
 
-    // path to write to
+    /**
+     * path to write to
+     */
     private final String url;
-    
+
     /**
      * Action with standard action name listed in the results, based on a path and a byte array as source
-     * 
+     *
      * @param path
      *            Files relative destination path related to your webdav directory
      * @param file
      *            Byte array to perform upload
      */
-    public WebDAVPut(final String path, final byte[] fileContent)
+    public WebDavPut(final String path, final byte[] fileContent)
     {
         super();
-        
-        this.url = getURL(path);
+
+        url = getUrl(path);
         this.fileContent = fileContent;
-        this.inputStream = null;
+        inputStream = null;
     }
 
     /**
      * Action with standard action name listed in the results, based on a path and a input stream as source
-     * 
+     *
      * @param path
      *            Files relative destination path related to your webdav directory
      * @param inputStream
      *            InputStream to perform upload
      */
-    public WebDAVPut(final String path, final InputStream inputStream)
+    public WebDavPut(final String path, final InputStream inputStream)
     {
         super();
-        
-        this.fileContent = null;
-        this.url = getURL(path);
+
+        url = getUrl(path);
+        fileContent = null;
         this.inputStream = inputStream;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void preValidate() throws Exception
     {
         WebDavActionValidator.validate(this);
 
         // Verify: Data to perform upload is given
-        Assert.assertFalse("No content to perform upload", this.fileContent == null && this.inputStream == null);
+        Assert.assertTrue("No content to perform upload", fileContent != null || inputStream != null);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void execute() throws Exception
     {
-        // Upload by InputStream
-        if (this.inputStream != null)
+        if (inputStream != null)
         {
-            this.getSardine().put(url, this.inputStream);
+            getSardine().put(url, inputStream);
         }
         else
         {
-            this.getSardine().put(url, this.fileContent);
+            getSardine().put(url, fileContent);
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void postValidate() throws Exception
     {
         // Verify: Put operation succeeded ->
         // 201 done by creating a new file
         // 204 done by overwriting an existing file
-        ResponseCodeValidator.validate(getHttpResponseCode(), 201, 204);
+        StatusCodeValidator.validate(getStatusCode(), 201, 204);
     }
 }

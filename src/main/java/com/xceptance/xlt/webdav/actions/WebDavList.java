@@ -3,8 +3,8 @@ package com.xceptance.xlt.webdav.actions;
 import java.util.List;
 
 import com.github.sardine.DavResource;
-import com.xceptance.xlt.webdav.impl.AbstractWebDAVAction;
-import com.xceptance.xlt.webdav.validators.ResponseCodeValidator;
+import com.xceptance.xlt.webdav.impl.AbstractWebDavAction;
+import com.xceptance.xlt.webdav.validators.StatusCodeValidator;
 import com.xceptance.xlt.webdav.validators.WebDavActionValidator;
 
 /**
@@ -16,31 +16,34 @@ import com.xceptance.xlt.webdav.validators.WebDavActionValidator;
  *
  * @author Karsten Sommer (Xceptance Software Technologies GmbH)
  */
-public class WebDAVList extends AbstractWebDAVAction<WebDAVList>
+public class WebDavList extends AbstractWebDavAction<WebDavList>
 {
-    // Search depth at the destination path
+    /**
+     * Search depth at the destination path
+     */
     private final int depth;
 
-    // Resource result set
+    /**
+     * Resource result set
+     */
     private List<DavResource> resources;
 
-    // the path to get
+    /**
+     * the path to get
+     */
     private final String url;
-    
+
     /**
      * Action with standard action name listed in the results, based on a path
      *
      * @param path
      *            Resources relative source path related to your webdav directory
      */
-    public WebDAVList(final String path)
+    public WebDavList(final String path)
     {
-        super();
-
-        this.depth = 0;
-        this.url = getURL(path);
+        this(path, 0);
     }
-    
+
     /**
      * Action with standard action name listed in the results, based on a path
      *
@@ -49,12 +52,12 @@ public class WebDAVList extends AbstractWebDAVAction<WebDAVList>
      * @param depth
      *            Depth of search (>= -1: -1 = infinity, 0 = single resource) maybe not supported by a server
      */
-    public WebDAVList(final String path, final int depth)
+    public WebDavList(final String path, final int depth)
     {
         super();
 
+        url = getUrl(path);
         this.depth = depth;
-        this.url = getURL(path);
     }
 
     /**
@@ -63,14 +66,11 @@ public class WebDAVList extends AbstractWebDAVAction<WebDAVList>
      * @param src
      *            Source DavResource object to perform this action
      */
-    public WebDAVList(final DavResource src)
+    public WebDavList(final DavResource src)
     {
-        super();
-
-        this.depth = 0;
-        this.url = getURL(src);
+        this(src, 0);
     }
-    
+
     /**
      * Action with standard action name listed in the results, based on a resource object
      *
@@ -79,31 +79,40 @@ public class WebDAVList extends AbstractWebDAVAction<WebDAVList>
      * @param depth
      *            Depth of search (>= -1: -1 = infinity, 0 = single resource) maybe not supported by a server
      */
-    public WebDAVList (final DavResource src, final int depth)
+    public WebDavList(final DavResource src, final int depth)
     {
         super();
 
+        url = getUrl(src);
         this.depth = depth;
-        this.url = getURL(src);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void preValidate() throws Exception
     {
         WebDavActionValidator.validate(this);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void execute() throws Exception
     {
-        this.resources = this.getSardine().list(url, depth, false);
+        resources = getSardine().list(url, depth, false);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void postValidate() throws Exception
     {
         // Verify: List operation succeeded -> 207
-        ResponseCodeValidator.validate(getHttpResponseCode(), 207);
+        StatusCodeValidator.validate(getStatusCode(), 207);
     }
 
     /**
@@ -113,6 +122,6 @@ public class WebDAVList extends AbstractWebDAVAction<WebDAVList>
      */
     public List<DavResource> getResources()
     {
-        return this.resources;
+        return resources;
     }
 }

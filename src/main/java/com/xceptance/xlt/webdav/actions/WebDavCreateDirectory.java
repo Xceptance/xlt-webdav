@@ -1,7 +1,7 @@
 package com.xceptance.xlt.webdav.actions;
 
-import com.xceptance.xlt.webdav.impl.AbstractWebDAVAction;
-import com.xceptance.xlt.webdav.validators.ResponseCodeValidator;
+import com.xceptance.xlt.webdav.impl.AbstractWebDavAction;
+import com.xceptance.xlt.webdav.validators.StatusCodeValidator;
 import com.xceptance.xlt.webdav.validators.WebDavActionValidator;
 
 /**
@@ -11,39 +11,51 @@ import com.xceptance.xlt.webdav.validators.WebDavActionValidator;
  *
  * @author Karsten Sommer (Xceptance Software Technologies GmbH)
  */
-public class WebDAVCreateDirectory extends AbstractWebDAVAction<WebDAVCreateDirectory>
+public class WebDavCreateDirectory extends AbstractWebDavAction<WebDavCreateDirectory>
 {
-	// the path to create
-	private final String url;
-	
+    /**
+     * the path to create
+     */
+    private final String url;
+
     /**
      * Action with standard action name listed in the results, based on a path
      *
      * @param path
      *            Directory's relative destination path relative to your webdav directory
      */
-    public WebDAVCreateDirectory(final String path)
+    public WebDavCreateDirectory(final String path)
     {
         super();
-        this.url = getURL(path);
+
+        url = getUrl(path);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void preValidate() throws Exception
     {
         WebDavActionValidator.validate(this);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void execute() throws Exception
     {
-        this.getSardine().createDirectory(url);
+        getSardine().createDirectory(url);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void postValidate() throws Exception
     {
         // Verify: create operation succeeded -> 201
-        ResponseCodeValidator.validate(getHttpResponseCode(), 201);
+        StatusCodeValidator.validate(getStatusCode(), 201);
     }
 }

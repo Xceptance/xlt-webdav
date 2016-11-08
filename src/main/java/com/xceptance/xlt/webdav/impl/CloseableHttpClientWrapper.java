@@ -20,7 +20,7 @@ import com.xceptance.xlt.api.engine.RequestData;
 import com.xceptance.xlt.api.engine.Session;
 import com.xceptance.xlt.engine.util.socket.SocketStatistics;
 import com.xceptance.xlt.engine.util.socket.XltSockets;
-import com.xceptance.xlt.webdav.util.WebDAVContext;
+import com.xceptance.xlt.webdav.util.WebDavContext;
 
 /**
  * A wrapper around a {@link CloseableHttpClient} object that delegates all method calls to the wrapped object, but
@@ -41,7 +41,7 @@ public class CloseableHttpClientWrapper extends CloseableHttpClient
         try
         {
             // get the "doExecute" method object and make it accessible
-            Class<?> internalHttpClientClass = Class.forName("org.apache.http.impl.client.InternalHttpClient");
+            final Class<?> internalHttpClientClass = Class.forName("org.apache.http.impl.client.InternalHttpClient");
             doExecuteMethod = internalHttpClientClass.getDeclaredMethod("doExecute", HttpHost.class, HttpRequest.class, HttpContext.class);
             doExecuteMethod.setAccessible(true);
         }
@@ -58,11 +58,11 @@ public class CloseableHttpClientWrapper extends CloseableHttpClient
 
     /**
      * Creates a new wrapper object around the passed httpClient instance.
-     * 
+     *
      * @param httpClient
      *            the instance to wrap
      */
-    public CloseableHttpClientWrapper(CloseableHttpClient httpClient)
+    public CloseableHttpClientWrapper(final CloseableHttpClient httpClient)
     {
         this.httpClient = httpClient;
     }
@@ -70,6 +70,7 @@ public class CloseableHttpClientWrapper extends CloseableHttpClient
     /**
      * {@inheritDoc}
      */
+    @Override
     public void close() throws IOException
     {
         httpClient.close();
@@ -78,6 +79,7 @@ public class CloseableHttpClientWrapper extends CloseableHttpClient
     /**
      * {@inheritDoc}
      */
+    @Override
     public ClientConnectionManager getConnectionManager()
     {
         return httpClient.getConnectionManager();
@@ -86,6 +88,7 @@ public class CloseableHttpClientWrapper extends CloseableHttpClient
     /**
      * {@inheritDoc}
      */
+    @Override
     public HttpParams getParams()
     {
         return httpClient.getParams();
@@ -94,10 +97,14 @@ public class CloseableHttpClientWrapper extends CloseableHttpClient
     /**
      * {@inheritDoc}
      */
-    protected CloseableHttpResponse doExecute(HttpHost target, HttpRequest request, HttpContext context) throws IOException
+    @Override
+    protected CloseableHttpResponse doExecute(final HttpHost target, final HttpRequest request, final HttpContext context)
+        throws IOException
     {
+        final AbstractWebDavAction<?> action = WebDavContext.getActiveAction();
+
         // initialize the request data object which will carry all request/response details
-        RequestData requestData = new RequestData(WebDAVContext.getActiveAction().getTimerName());
+        final RequestData requestData = new RequestData(action.getTimerName());
 
         try
         {
@@ -105,21 +112,21 @@ public class CloseableHttpClientWrapper extends CloseableHttpClient
             XltSockets.getSocketMonitor().reset();
 
             // now invoke doExceute() reflectively
-            CloseableHttpResponse response = invokeDoExecute(target, request, context);
+            final CloseableHttpResponse response = invokeDoExecute(target, request, context);
 
             // ensure that the response is read into memory completely
-            HttpEntity entity = response.getEntity();
+            final HttpEntity entity = response.getEntity();
             if (entity != null)
             {
                 response.setEntity(new BufferedHttpEntity(entity));
             }
 
             // get the status code
-            int responseCode = response.getStatusLine().getStatusCode();
+            final int responseCode = response.getStatusLine().getStatusCode();
 
             // get the response content type if available
-            Header contentTypeHeader = response.getFirstHeader("Content-Type");
-            String responseContentType = (contentTypeHeader == null) ? "" : contentTypeHeader.getValue();
+            final Header contentTypeHeader = response.getFirstHeader("Content-Type");
+            final String responseContentType = (contentTypeHeader == null) ? "" : contentTypeHeader.getValue();
 
             // update the request data object
             requestData.setResponseCode(responseCode);
@@ -127,20 +134,19 @@ public class CloseableHttpClientWrapper extends CloseableHttpClient
             requestData.setFailed(responseCode >= 500);
 
             // update the current action
-            AbstractWebDAVAction action = WebDAVContext.getActiveAction();
-            action.setHttpResponseCode(responseCode);
-            action.setHttpContentType(responseContentType);
+            action.setStatusCode(responseCode);
+            action.setResponseContentType(responseContentType);
 
             // finally return the response
             return response;
         }
-        catch (IOException ex)
+        catch (final IOException ex)
         {
             // update the request data object
             requestData.setFailed(true);
 
             // update the current action
-            WebDAVContext.getActiveAction().setExMessage(ex.getMessage());
+            action.setException(ex);
 
             // rethrow the exception
             throw ex;
@@ -155,13 +161,13 @@ public class CloseableHttpClientWrapper extends CloseableHttpClient
             requestData.setRunTime();
 
             // set any request info
-            RequestLine requestLine = request.getRequestLine();
+            final RequestLine requestLine = request.getRequestLine();
 
             requestData.setHttpMethod(requestLine.getMethod());
             requestData.setUrl(requestLine.getUri());
 
             // set network statistics
-            SocketStatistics socketStatistics = XltSockets.getSocketMonitor().getSocketStatistics();
+            final SocketStatistics socketStatistics = XltSockets.getSocketMonitor().getSocketStatistics();
 
             requestData.setBytesSent(socketStatistics.getBytesSent());
             requestData.setBytesReceived(socketStatistics.getBytesReceived());
@@ -181,7 +187,7 @@ public class CloseableHttpClientWrapper extends CloseableHttpClient
     /**
      * Invokes the {@link #doExecute(HttpHost, HttpRequest, HttpContext)} method on the wrapped
      * {@link CloseableHttpClient} object.
-     * 
+     *
      * @param target
      *            the HTTP target
      * @param request
@@ -192,18 +198,19 @@ public class CloseableHttpClientWrapper extends CloseableHttpClient
      * @throws IOException
      *             if anything goes wrong
      */
-    private CloseableHttpResponse invokeDoExecute(HttpHost target, HttpRequest request, HttpContext context) throws IOException
+    private CloseableHttpResponse invokeDoExecute(final HttpHost target, final HttpRequest request, final HttpContext context)
+        throws IOException
     {
         try
         {
             return (CloseableHttpResponse) doExecuteMethod.invoke(httpClient, target, request, context);
         }
-        catch (Exception ex)
+        catch (final Exception ex)
         {
             if (ex instanceof InvocationTargetException)
             {
                 // unwrap causing exception and throw it directly
-                Throwable cause = ex.getCause();
+                final Throwable cause = ex.getCause();
 
                 if (cause instanceof IOException)
                 {

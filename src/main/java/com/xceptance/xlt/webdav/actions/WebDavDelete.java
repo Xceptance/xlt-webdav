@@ -1,8 +1,8 @@
 package com.xceptance.xlt.webdav.actions;
 
 import com.github.sardine.DavResource;
-import com.xceptance.xlt.webdav.impl.AbstractWebDAVAction;
-import com.xceptance.xlt.webdav.validators.ResponseCodeValidator;
+import com.xceptance.xlt.webdav.impl.AbstractWebDavAction;
+import com.xceptance.xlt.webdav.validators.StatusCodeValidator;
 import com.xceptance.xlt.webdav.validators.WebDavActionValidator;
 
 /**
@@ -11,21 +11,23 @@ import com.xceptance.xlt.webdav.validators.WebDavActionValidator;
  *
  * @author Karsten Sommer (Xceptance Software Technologies GmbH)
  */
-public class WebDAVDelete extends AbstractWebDAVAction<WebDAVDelete>
+public class WebDavDelete extends AbstractWebDavAction<WebDavDelete>
 {
-	// our path to delete
-	private final String url;
-	
+    /**
+     * our path to delete
+     */
+    private final String url;
+
     /**
      * Action with standard action name listed in the results, based on a path
      *
      * @param relativePath
      *            Resources relative source path related to your webdav directory
      */
-    public WebDAVDelete(final String path)
+    public WebDavDelete(final String path)
     {
         super();
-        this.url = getURL(path);
+        url = getUrl(path);
     }
 
     /**
@@ -34,28 +36,37 @@ public class WebDAVDelete extends AbstractWebDAVAction<WebDAVDelete>
      * @param src
      *            Source DavResource object to perform this action
      */
-    public WebDAVDelete(final DavResource src)
+    public WebDavDelete(final DavResource src)
     {
         super();
-        this.url = getURL(src); 
+        url = getUrl(src);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void preValidate() throws Exception
     {
         WebDavActionValidator.validate(this);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void execute() throws Exception
     {
-        this.getSardine().delete(url);
+        getSardine().delete(url);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void postValidate() throws Exception
     {
         // Verify: Delete operation succeeded -> 204
-        ResponseCodeValidator.validate(getHttpResponseCode(), 204);
+        StatusCodeValidator.validate(getStatusCode(), 204);
     }
 }

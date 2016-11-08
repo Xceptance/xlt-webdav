@@ -1,11 +1,11 @@
 package com.xceptance.xlt.webdav.util;
 
-import com.xceptance.xlt.api.engine.Session;
-import com.xceptance.xlt.webdav.impl.AbstractWebDAVAction;
-
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import com.xceptance.xlt.api.engine.Session;
+import com.xceptance.xlt.webdav.impl.AbstractWebDavAction;
 
 /**
  * Context class to perform basic action flow and logging. Internally every created WebdavAction is stored in a map
@@ -14,10 +14,12 @@ import java.util.Map;
  *
  * @author @author Karsten Sommer (Xceptance Software Technologies GmbH)
  */
-public abstract class WebDAVContext
+public abstract class WebDavContext
 {
-    // UserID related storage for your action to be performed <String UserID, AbstractWebdavAction activeAction>
-    private static Map<String, AbstractWebDAVAction> activeActions = new HashMap<String, AbstractWebDAVAction>();
+    /**
+     * UserID related storage for your action to be performed <String UserID, AbstractWebdavAction activeAction>
+     */
+    private static final Map<String, AbstractWebDavAction<?>> activeActions = new ConcurrentHashMap<>();
 
     /**
      * Returns last created action related to session userID Called implicit by AbstractWebdavAction's constructor to
@@ -25,9 +27,9 @@ public abstract class WebDAVContext
      *
      * @return Current WebdavAction related to userID
      */
-    public static AbstractWebDAVAction getActiveAction()
+    public static AbstractWebDavAction<?> getActiveAction()
     {
-        return WebDAVContext.activeActions.get(Session.getCurrent().getUserID());
+        return activeActions.get(Session.getCurrent().getUserID());
     }
 
     /**
@@ -37,24 +39,23 @@ public abstract class WebDAVContext
      * @param activeAction
      *            current WebdavAction which is getting to be performed
      */
-    public static void setActiveAction(AbstractWebDAVAction activeAction)
+    public static void setActiveAction(final AbstractWebDavAction<?> activeAction)
     {
-        WebDAVContext.activeActions.put(Session.getCurrent().getUserID(), activeAction);
+        activeActions.put(Session.getCurrent().getUserID(), activeAction);
     }
 
     /**
      * Shutdowns users sardine client and releases users "activeAction" (IMPORTANT after test case completion to avoid
      * endless chaining of actions and resulting memory leaks)
+     *
+     * @throws IOException
      */
-    public static void clean()
+    public static void cleanUp() throws IOException
     {
-        try 
+        final AbstractWebDavAction<?> action = activeActions.remove(Session.getCurrent().getUserID());
+        if (action != null)
         {
-			WebDAVContext.activeActions.get(Session.getCurrent().getUserID()).releaseClient();
-		} 
-        catch (IOException e) 
-        {
-		}
-        WebDAVContext.activeActions.put(Session.getCurrent().getUserID(), null);
+            action.releaseClient();
+        }
     }
 }

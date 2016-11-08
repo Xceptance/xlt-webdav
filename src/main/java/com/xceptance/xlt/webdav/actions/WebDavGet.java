@@ -5,8 +5,8 @@ import java.io.InputStream;
 import org.apache.commons.io.IOUtils;
 
 import com.github.sardine.DavResource;
-import com.xceptance.xlt.webdav.impl.AbstractWebDAVAction;
-import com.xceptance.xlt.webdav.validators.ResponseCodeValidator;
+import com.xceptance.xlt.webdav.impl.AbstractWebDavAction;
+import com.xceptance.xlt.webdav.validators.StatusCodeValidator;
 import com.xceptance.xlt.webdav.validators.WebDavActionValidator;
 
 /**
@@ -17,30 +17,36 @@ import com.xceptance.xlt.webdav.validators.WebDavActionValidator;
  *
  * @author Karsten Sommer (Xceptance Software Technologies GmbH)
  */
-public class WebDAVGet extends AbstractWebDAVAction<WebDAVGet>
+public class WebDavGet extends AbstractWebDavAction<WebDavGet>
 {
-	// the path to fetch
-	private final String url;
-	
-	// File (available after performed action if flag is set)
+    /**
+     * the path to fetch
+     */
+    private final String url;
+
+    /**
+     * File (available after performed action if flag is set)
+     */
     private byte[] fileContent;
 
-    // do we want to preserve the file content?
+    /**
+     * do we want to preserve the file content?
+     */
     private final boolean store;
-    
+
     /**
      * Action with standard action name listed in the results, based on a path
      *
      * @param path
      *            Files relative source path related to your webdav directory
      * @param store
-     * 				do we want to store the fetched content, true if yes, false otherwise 
+     *            do we want to store the fetched content, true if yes, false otherwise
      */
-    public WebDAVGet(final String path, final boolean store)
+    public WebDavGet(final String path, final boolean store)
     {
         super();
-        
-        this.url = getURL(path);
+
+        url = getUrl(path);
         this.store = store;
     }
 
@@ -50,48 +56,58 @@ public class WebDAVGet extends AbstractWebDAVAction<WebDAVGet>
      * @param src
      *            Source DavResource object to perform this action
      * @param store
-     * 				do we want to store the fetched content, true if yes, false otherwise 
+     *            do we want to store the fetched content, true if yes, false otherwise
      */
-    public WebDAVGet(final DavResource src, final boolean store)
+    public WebDavGet(final DavResource src, final boolean store)
     {
         super();
-        this.url = getURL(src);
+
+        url = getUrl(src);
         this.store = store;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void preValidate() throws Exception
     {
         WebDavActionValidator.validate(this);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void execute() throws Exception
     {
         try (final InputStream is = getSardine().get(url))
         {
-        	if (store)
-        	{
-        		this.fileContent = IOUtils.toByteArray(is);
-        	}
-        	else
-        	{
-        		// just read, don't keep
-        		byte[] data = new byte[1024];
+            if (store)
+            {
+                fileContent = IOUtils.toByteArray(is);
+            }
+            else
+            {
+                // just read, don't keep
+                final byte[] data = new byte[1024];
 
-        		while (is.read(data, 0, data.length) != -1) 
-        		{
-        			// nope
-        		}
-        	}
+                while (is.read(data, 0, data.length) != -1)
+                {
+                    // nope
+                }
+            }
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void postValidate() throws Exception
     {
         // Verify: Get operation succeeded -> 200
-        ResponseCodeValidator.validate(getHttpResponseCode(), 200);
+        StatusCodeValidator.validate(getStatusCode(), 200);
     }
 
     /**

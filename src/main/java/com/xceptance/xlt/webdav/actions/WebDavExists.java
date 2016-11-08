@@ -3,8 +3,8 @@ package com.xceptance.xlt.webdav.actions;
 import org.junit.Assert;
 
 import com.github.sardine.DavResource;
-import com.xceptance.xlt.webdav.impl.AbstractWebDAVAction;
-import com.xceptance.xlt.webdav.validators.ResponseCodeValidator;
+import com.xceptance.xlt.webdav.impl.AbstractWebDavAction;
+import com.xceptance.xlt.webdav.validators.StatusCodeValidator;
 import com.xceptance.xlt.webdav.validators.WebDavActionValidator;
 
 /**
@@ -13,17 +13,23 @@ import com.xceptance.xlt.webdav.validators.WebDavActionValidator;
  *
  * @author Karsten Sommer (Xceptance Software Technologies GmbH)
  */
-public class WebDAVExists extends AbstractWebDAVAction<WebDAVExists>
+public class WebDavExists extends AbstractWebDavAction<WebDavExists>
 {
-    // Expectation of resources existence
-    private boolean exists;
+    /**
+     * Expectation of resources existence
+     */
+    private final boolean exists;
 
-    // Verification of path validity
+    /**
+     * Verification of path validity
+     */
     private boolean doesExist = false;
 
-    // the path to check
+    /**
+     * the path to check
+     */
     private final String url;
-    
+
     /**
      * Action with standard action name listed in the results, based on a path
      *
@@ -32,12 +38,12 @@ public class WebDAVExists extends AbstractWebDAVAction<WebDAVExists>
      * @param exists
      *            Expected state of resources existence
      */
-    public WebDAVExists(final String relativePath, final boolean exists)
+    public WebDavExists(final String relativePath, final boolean exists)
     {
         super();
-        
+
         this.exists = exists;
-        this.url = getURL(relativePath);
+        url = getUrl(relativePath);
     }
 
     /**
@@ -48,42 +54,50 @@ public class WebDAVExists extends AbstractWebDAVAction<WebDAVExists>
      * @param exists
      *            Expected state of resources existence
      */
-    public WebDAVExists(final DavResource src, final boolean exists)
+    public WebDavExists(final DavResource src, final boolean exists)
     {
         super();
 
         this.exists = exists;
-        this.url = getURL(src); 
+        url = getUrl(src);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void preValidate() throws Exception
     {
         WebDavActionValidator.validate(this);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void execute() throws Exception
     {
         // Responds http 404 in case of a non existing resource without SardineException
-        this.doesExist = getSardine().exists(url);
+        doesExist = getSardine().exists(url);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void postValidate() throws Exception
     {
+        // Verify: check operation succeeded -> 200, 404
+        StatusCodeValidator.validate(getStatusCode(), exists ? 200 : 404);
+
         // Verify: Resource expectations
-    	if (this.exists)
-    	{
-    		Assert.assertTrue("The resource does not exist", this.doesExist);
-    	}
-    	else
-    	{
-    		Assert.assertFalse("The resource does exist", this.doesExist);
-    	}    	
-
-    	// Verify: check operation succeeded -> 200, 404
-        ResponseCodeValidator.validate(getHttpResponseCode(), this.exists ? 200 : 404);
+        if (exists)
+        {
+            Assert.assertTrue("The resource does not exist", doesExist);
+        }
+        else
+        {
+            Assert.assertFalse("The resource does exist", doesExist);
+        }
     }
-
 }

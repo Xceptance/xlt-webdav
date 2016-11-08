@@ -1,23 +1,29 @@
 package com.xceptance.xlt.webdav.actions;
 
 import com.github.sardine.DavResource;
-import com.xceptance.xlt.webdav.impl.AbstractWebDAVAction;
-import com.xceptance.xlt.webdav.validators.ResponseCodeValidator;
+import com.xceptance.xlt.webdav.impl.AbstractWebDavAction;
+import com.xceptance.xlt.webdav.validators.StatusCodeValidator;
 import com.xceptance.xlt.webdav.validators.WebDavActionValidator;
 
 /**
- * Moves a resource to a destination by using WebDAV <code>MOVE</code> by sardine.move. Can be used by relative path or
- * by a resource object provided by previously performed ListResources actions to perform a move operation to the
- * destination path.
+ * Copies a resource to a destination by using WebDAV <code>COPY</code> by sardine.copy. Can be used by relative path or
+ * by a resource object provided by previously performed ListResources actions to perform a copy operation to the
+ * destination path. Does does always overwrite at its destination.
+ *
+ * @author Karsten Sommer (Xceptance Software Technologies GmbH)
  */
-public class WebDAVMove extends AbstractWebDAVAction<WebDAVMove>
+public class WebDavCopy extends AbstractWebDavAction<WebDavCopy>
 {
-    // Relative path of actions source
-    private final String srcURL;
+    /**
+     * source
+     */
+    private final String srcUrl;
 
-    // Relative path of actions destination
-    private final String dstURL;
-    
+    /**
+     * destination
+     */
+    private final String dstUrl;
+
     /**
      * Action with standard action name listed in the results, based on a path
      *
@@ -26,11 +32,12 @@ public class WebDAVMove extends AbstractWebDAVAction<WebDAVMove>
      * @param dst
      *            Resources relative destination path related to your webdav directory
      */
-    public WebDAVMove(final String src, final String dst)
+    public WebDavCopy(final String src, final String dst)
     {
         super();
-        this.srcURL = getURL(src);
-        this.dstURL = getURL(dst);
+
+        srcUrl = getUrl(src);
+        dstUrl = getUrl(dst);
     }
 
     /**
@@ -41,25 +48,35 @@ public class WebDAVMove extends AbstractWebDAVAction<WebDAVMove>
      * @param dst
      *            Resources relative destination path related to your webdav directory
      */
-    public WebDAVMove(final DavResource src, final String dst)
+    public WebDavCopy(final DavResource src, final String dst)
     {
         super();
-        this.srcURL = getURL(src);
-        this.dstURL = getURL(dst);
+
+        srcUrl = getUrl(src);
+        dstUrl = getUrl(dst);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void preValidate() throws Exception
     {
         WebDavActionValidator.validate(this);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void execute() throws Exception
     {
-        this.getSardine().move(srcURL, dstURL);
+        getSardine().copy(srcUrl, dstUrl);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void postValidate() throws Exception
     {
@@ -67,6 +84,6 @@ public class WebDAVMove extends AbstractWebDAVAction<WebDAVMove>
         // 201 done by creating a new resource
         // 204 done by overwriting an existing resource
         // 207
-        ResponseCodeValidator.validate(getHttpResponseCode(), 201, 204, 207);
+        StatusCodeValidator.validate(getStatusCode(), 201, 204, 207);
     }
 }

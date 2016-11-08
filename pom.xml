@@ -9,7 +9,7 @@
     <version>0.0.1</version>
 
     <name>xlt-webdav</name>
-    <description>A framework based on XLT to test WebDAV servers.</description>
+    <description>A library based on XLT to test WebDAV servers.</description>
     <url>https://github.com/Xceptance/xlt-webdav</url>
     <organization>
         <name>Xceptance Software Technologies</name>
@@ -52,7 +52,7 @@
 
     <repositories>
         <repository>
-            <id>xc-nexus</id>
+            <id>xceptance-releases</id>
             <url>https://lab.xceptance.de/nexus/content/groups/public</url>
         </repository>
     </repositories>
@@ -61,7 +61,7 @@
         <dependency>
             <groupId>com.xceptance</groupId>
             <artifactId>xlt</artifactId>
-            <version>4.7.1</version>
+            <version>4.7.2</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

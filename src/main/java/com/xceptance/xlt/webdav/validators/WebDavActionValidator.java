@@ -3,9 +3,7 @@ package com.xceptance.xlt.webdav.validators;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 
-import com.xceptance.xlt.webdav.actions.WebDAVExists;
-import com.xceptance.xlt.webdav.actions.WebDAVList;
-import com.xceptance.xlt.webdav.impl.AbstractWebDAVAction;
+import com.xceptance.xlt.webdav.impl.AbstractWebDavAction;
 
 /**
  * Basic prevalidator for all webDAV actions. Validates the existence of a Sardine client, host name settings, proper
@@ -17,13 +15,13 @@ public class WebDavActionValidator
 {
     /**
      * Validates the existence of a client, host name settings, well credential settings and paths of a WebdavAction
-     * 
+     *
      * @param activeAction
      *            WebdavAction which is going to be performed
-     * @throws Exception
+     * @throws AssertionError
      *             Assertion failure
      */
-    public static void validate(AbstractWebDAVAction activeAction) throws Exception
+    public static void validate(final AbstractWebDavAction<?> activeAction) throws AssertionError
     {
         // Verify: Host name is not blank
         Assert.assertTrue("Host name must not be blank", StringUtils.isNotBlank(activeAction.getHostName()));
