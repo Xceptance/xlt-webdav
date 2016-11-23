@@ -3,17 +3,33 @@ package com.xceptance.xlt.webdav.impl;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.ProxySelector;
+import java.security.KeyStore;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.text.MessageFormat;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.ssl.SSLContexts;
 
 import com.github.sardine.Version;
 import com.github.sardine.impl.SardineImpl;
+import com.xceptance.xlt.api.util.XltException;
 import com.xceptance.xlt.api.util.XltProperties;
 import com.xceptance.xlt.engine.XltDnsResolver;
 
@@ -22,7 +38,7 @@ import com.xceptance.xlt.engine.XltDnsResolver;
  * <p>
  * The functionality of the super class is not altered in any way. It is still fully responsible to execute the actual
  * WebDAV operations. However, in order to get access to all the request and response details of the underlying HTTP
- * communication, Sardine's HTTP client will be wrapped.
+ * communication, Sardine's HTTP client will be wrapped. Furthermore, invalid/self-signed certificates will be accepted.
  *
  * @see CloseableHttpClientWrapper
  */
@@ -188,6 +204,71 @@ public class CustomizedSardineImpl extends SardineImpl
         catch (final IllegalAccessException ex)
         {
             throw new RuntimeException("Failed to access field", ex);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected ConnectionSocketFactory createDefaultSecureSocketFactory()
+    {
+        try
+        {
+            // create an SSL context with an empty trust store
+            final KeyStore emptyTrustStore = KeyStore.getInstance(KeyStore.getDefaultType());
+            final SSLContext sslContext = SSLContexts.custom().loadTrustMaterial(emptyTrustStore, null).build();
+
+            // set a trust manager that trusts anyone
+            sslContext.init(null, new TrustManager[]
+                {
+                    new InsecureTrustManager()
+                }, null);
+
+            // create a host name verifier that accepts any host
+            final HostnameVerifier hostNameVerifier = NoopHostnameVerifier.INSTANCE;
+
+            // build the socket factory
+            return new SSLConnectionSocketFactory(sslContext, hostNameVerifier);
+        }
+        catch (final Exception ex)
+        {
+            throw new XltException("Failed to create SSL connection socket factory", ex);
+        }
+    }
+
+    /**
+     * A trust manager that trusts anyone.
+     */
+    private static class InsecureTrustManager implements X509TrustManager
+    {
+        private final Set<X509Certificate> acceptedIssuers = new HashSet<>();
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void checkClientTrusted(final X509Certificate[] chain, final String authType) throws CertificateException
+        {
+            acceptedIssuers.addAll(Arrays.asList(chain));
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void checkServerTrusted(final X509Certificate[] chain, final String authType) throws CertificateException
+        {
+            acceptedIssuers.addAll(Arrays.asList(chain));
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public X509Certificate[] getAcceptedIssuers()
+        {
+            return acceptedIssuers.toArray(new X509Certificate[acceptedIssuers.size()]);
         }
     }
 }
