@@ -1,43 +1,47 @@
 package com.xceptance.xlt.webdav.actions;
 
 import com.xceptance.xlt.webdav.impl.AbstractWebDavAction;
-import com.xceptance.xlt.webdav.validators.StatusCodeValidator;
-import com.xceptance.xlt.webdav.validators.WebDavActionValidator;
+import com.xceptance.xlt.webdav.util.WebDavValidationUtils;
 
 /**
- * Creates a directory at a destination by using WebDAV <code>MKCOL</code> by sardine.createDirectory. Can be used by
- * relative path on an existing directory. Ensure the parent directory exists, otherwise this operation throws a
- * SardineException HTTP 409!
+ * Creates a directory on a WebDAV server using the MKCOL request method. Ensure that any parent directory already
+ * exists, otherwise this operation will throw an exception.
+ * <p>
+ * The target location has to be given as path (relative to the WebDAV base directory as configured in
+ * {@link WebDavConnect}).
+ * <p>
+ * The default action name in the test results will be "{@literal WebDavCreateDirectory}". Use
+ * {@link #timerName(String)} to specify a different name.
  *
  * @author Karsten Sommer (Xceptance Software Technologies GmbH)
  */
 public class WebDavCreateDirectory extends AbstractWebDavAction<WebDavCreateDirectory>
 {
     /**
-     * the path to create
+     * The URL of the directory to be created.
      */
     private final String url;
 
     /**
-     * Action with standard action name listed in the results, based on a path
+     * Creates a new action with the passed target path.
      *
-     * @param path
-     *            Directory's relative destination path relative to your webdav directory
+     * @param relativePath
+     *            the resource path relative to your WebDAV base directory
      */
-    public WebDavCreateDirectory(final String path)
+    public WebDavCreateDirectory(final String relativePath)
     {
         super();
 
-        url = getUrl(path);
+        url = getUrl(relativePath);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void preValidate() throws Exception
+    public void preValidate()
     {
-        WebDavActionValidator.validate(this);
+        WebDavValidationUtils.validateAction(this);
     }
 
     /**
@@ -53,9 +57,9 @@ public class WebDavCreateDirectory extends AbstractWebDavAction<WebDavCreateDire
      * {@inheritDoc}
      */
     @Override
-    protected void postValidate() throws Exception
+    protected void postValidate()
     {
-        // Verify: create operation succeeded -> 201
-        StatusCodeValidator.validate(getStatusCode(), 201);
+        // check status code -> 201
+        WebDavValidationUtils.validateStatusCode(getStatusCode(), 201);
     }
 }

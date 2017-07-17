@@ -13,9 +13,9 @@ import com.xceptance.xlt.webdav.impl.AbstractWebDavAction;
 public class WebDavConnect extends AbstractWebDavAction<WebDavConnect>
 {
     /**
-     *
+     * Whether the WebDAV base directory indeed exists.
      */
-    private boolean doesExist = false;
+    private boolean doesExist;
 
     /**
      * Action with standard action name listed in the results, based on a path
@@ -38,7 +38,7 @@ public class WebDavConnect extends AbstractWebDavAction<WebDavConnect>
      * {@inheritDoc}
      */
     @Override
-    public void preValidate() throws Exception
+    public void preValidate()
     {
         // nothing to do
     }
@@ -49,7 +49,6 @@ public class WebDavConnect extends AbstractWebDavAction<WebDavConnect>
     @Override
     protected void execute() throws Exception
     {
-        // Responds http 404 in case of a non existing resource without SardineException
         doesExist = getSardine().exists(getUrl(""));
     }
 
@@ -57,7 +56,7 @@ public class WebDavConnect extends AbstractWebDavAction<WebDavConnect>
      * {@inheritDoc}
      */
     @Override
-    protected void postValidate() throws Exception
+    protected void postValidate()
     {
         Assert.assertTrue("Initial connect and verification failed.", doesExist);
     }

@@ -2,65 +2,72 @@ package com.xceptance.xlt.webdav.actions;
 
 import com.github.sardine.DavResource;
 import com.xceptance.xlt.webdav.impl.AbstractWebDavAction;
-import com.xceptance.xlt.webdav.validators.StatusCodeValidator;
-import com.xceptance.xlt.webdav.validators.WebDavActionValidator;
+import com.xceptance.xlt.webdav.util.WebDavValidationUtils;
 
 /**
- * Moves a resource to a destination by using WebDAV <code>MOVE</code> by sardine.move. Can be used by relative path or
- * by a resource object provided by previously performed ListResources actions to perform a move operation to the
- * destination path.
+ * Moves a file or directory on a WebDAV server to another directory using the MOVE request method. If another resource
+ * exists at the target location, it will be overwritten.
+ * <p>
+ * The resource in question can be specified either as path (relative to the WebDAV base directory as configured in
+ * {@link WebDavConnect}) or as a {@link DavResource} object, which can be obtained from the results of a
+ * {@link WebDavList} action. The target location has to be given as relative path in either case.
+ * <p>
+ * The default action name in the test results will be "{@literal WebDavMove}". Use {@link #timerName(String)} to
+ * specify a different name.
+ *
+ * @author Karsten Sommer (Xceptance Software Technologies GmbH)
  */
 public class WebDavMove extends AbstractWebDavAction<WebDavMove>
 {
     /**
      * Relative path of actions source
      */
-    private final String srcUrl;
+    private final String sourceUrl;
 
     /**
      * Relative path of actions destination
      */
-    private final String dstUrl;
+    private final String targetUrl;
 
     /**
      * Action with standard action name listed in the results, based on a path
      *
-     * @param src
-     *            Resources relative source path related to your webdav directory
-     * @param dst
-     *            Resources relative destination path related to your webdav directory
+     * @param relativeSourcePath
+     *            the source path relative to your WebDAV base directory
+     * @param relativeTargetPath
+     *            the target path relative to your WebDAV base directory
      */
-    public WebDavMove(final String src, final String dst)
+    public WebDavMove(final String relativeSourcePath, final String relativeTargetPath)
     {
         super();
 
-        srcUrl = getUrl(src);
-        dstUrl = getUrl(dst);
+        sourceUrl = getUrl(relativeSourcePath);
+        targetUrl = getUrl(relativeTargetPath);
     }
 
     /**
      * Action with standard action name listed in the results, based on a resource object
      *
-     * @param src
+     * @param davResource
      *            Source DavResource object to perform this action
-     * @param dst
+     * @param relativeTargetPath
      *            Resources relative destination path related to your webdav directory
      */
-    public WebDavMove(final DavResource src, final String dst)
+    public WebDavMove(final DavResource davResource, final String relativeTargetPath)
     {
         super();
 
-        srcUrl = getUrl(src);
-        dstUrl = getUrl(dst);
+        sourceUrl = getUrl(davResource);
+        targetUrl = getUrl(relativeTargetPath);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void preValidate() throws Exception
+    public void preValidate()
     {
-        WebDavActionValidator.validate(this);
+        WebDavValidationUtils.validateAction(this);
     }
 
     /**
@@ -69,19 +76,19 @@ public class WebDavMove extends AbstractWebDavAction<WebDavMove>
     @Override
     protected void execute() throws Exception
     {
-        getSardine().move(srcUrl, dstUrl);
+        getSardine().move(sourceUrl, targetUrl);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected void postValidate() throws Exception
+    protected void postValidate()
     {
-        // Verify: Move operation succeeded ->
-        // 201 done by creating a new resource
-        // 204 done by overwriting an existing resource
-        // 207
-        StatusCodeValidator.validate(getStatusCode(), 201, 204, 207);
+        // check status code
+        // - 201: done by creating a new resource
+        // - 204: done by overwriting an existing resource
+        // - 207: ???
+        WebDavValidationUtils.validateStatusCode(getStatusCode(), 201, 204, 207);
     }
 }

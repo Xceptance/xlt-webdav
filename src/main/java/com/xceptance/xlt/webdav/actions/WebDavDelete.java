@@ -2,53 +2,60 @@ package com.xceptance.xlt.webdav.actions;
 
 import com.github.sardine.DavResource;
 import com.xceptance.xlt.webdav.impl.AbstractWebDavAction;
-import com.xceptance.xlt.webdav.validators.StatusCodeValidator;
-import com.xceptance.xlt.webdav.validators.WebDavActionValidator;
+import com.xceptance.xlt.webdav.util.WebDavValidationUtils;
 
 /**
- * Deletes a resource by using WebDAV <code>DELETE</code> by sardine.delete. Can be used by relative path or by a
- * resource object provided by previously performed ListResources actions.
+ * Deletes a file or directory on a WebDAV server using the DELETE request method.
+ * <p>
+ * The resource in question can be specified either as path (relative to the WebDAV base directory as configured in
+ * {@link WebDavConnect}) or as a {@link DavResource} object, which can be obtained from the results of a
+ * {@link WebDavList} action.
+ * <p>
+ * The default action name in the test results will be "{@literal WebDavDelete}". Use {@link #timerName(String)} to
+ * specify a different name.
  *
  * @author Karsten Sommer (Xceptance Software Technologies GmbH)
  */
 public class WebDavDelete extends AbstractWebDavAction<WebDavDelete>
 {
     /**
-     * our path to delete
+     * The URL of the resource to be deleted.
      */
     private final String url;
 
     /**
-     * Action with standard action name listed in the results, based on a path
+     * Creates a new action with the passed resource path.
      *
      * @param relativePath
-     *            Resources relative source path related to your webdav directory
+     *            the resource path relative to your WebDAV base directory
      */
-    public WebDavDelete(final String path)
+    public WebDavDelete(final String relativePath)
     {
         super();
-        url = getUrl(path);
+
+        url = getUrl(relativePath);
     }
 
     /**
      * Action with standard action name listed in the results, based on a resource object
      *
-     * @param src
-     *            Source DavResource object to perform this action
+     * @param davResource
+     *            the {@link DavResource} object to delete
      */
-    public WebDavDelete(final DavResource src)
+    public WebDavDelete(final DavResource davResource)
     {
         super();
-        url = getUrl(src);
+
+        url = getUrl(davResource);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void preValidate() throws Exception
+    public void preValidate()
     {
-        WebDavActionValidator.validate(this);
+        WebDavValidationUtils.validateAction(this);
     }
 
     /**
@@ -64,9 +71,9 @@ public class WebDavDelete extends AbstractWebDavAction<WebDavDelete>
      * {@inheritDoc}
      */
     @Override
-    protected void postValidate() throws Exception
+    protected void postValidate()
     {
-        // Verify: Delete operation succeeded -> 204
-        StatusCodeValidator.validate(getStatusCode(), 204);
+        // check status code -> 204
+        WebDavValidationUtils.validateStatusCode(getStatusCode(), 204);
     }
 }

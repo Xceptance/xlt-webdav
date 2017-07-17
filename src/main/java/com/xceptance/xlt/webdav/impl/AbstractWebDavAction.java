@@ -22,17 +22,17 @@ import com.xceptance.xlt.webdav.util.WebDavContext;
 public abstract class AbstractWebDavAction<T> extends AbstractAction
 {
     /**
-     * Sardine client returned by SardineFactory
+     * The underlying Sardine client that does all the magic.
      */
     private Sardine sardine;
 
     /**
-     * Related user name for credentials
+     * The user name to use if the server requires authentication.
      */
     private String userName;
 
     /**
-     * Related user name for credentials
+     * The password to use if the server requires authentication.
      */
     private String userPassword;
 
@@ -47,17 +47,17 @@ public abstract class AbstractWebDavAction<T> extends AbstractAction
     private String webDavPath;
 
     /**
-     * Exception message text if thrown
+     * The exception that was thrown on the network layer.
      */
     private Exception exception;
 
     /**
-     * Http response code
+     * The status code.
      */
     private int statusCode = -1;
 
     /**
-     * Http content type
+     * The content type of the response.
      */
     private String responseContentType;
 
@@ -154,7 +154,9 @@ public abstract class AbstractWebDavAction<T> extends AbstractAction
     }
 
     /**
-     * @return Related sardine client
+     * Returns the underlying Sardine client that performs the actual communication with the WebDAV server.
+     *
+     * @return the Sardine client
      */
     public Sardine getSardine()
     {
@@ -162,7 +164,9 @@ public abstract class AbstractWebDavAction<T> extends AbstractAction
     }
 
     /**
-     * @return Credential user name
+     * Returns the user name used if the server requires authentication.
+     *
+     * @return the user name
      */
     public String getUserName()
     {
@@ -170,7 +174,9 @@ public abstract class AbstractWebDavAction<T> extends AbstractAction
     }
 
     /**
-     * @return Credential user password
+     * Returns the password used if the server requires authentication.
+     *
+     * @return the password
      */
     public String getUserPassword()
     {
@@ -194,11 +200,11 @@ public abstract class AbstractWebDavAction<T> extends AbstractAction
     }
 
     /**
-     * Returns the full absolute url of the current state
+     * Returns an absolute URL for the passed relative path.
      *
      * @param relativePath
      *            the relative path to append
-     * @return absolute url
+     * @return the resulting absolute URL
      */
     public String getUrl(final String relativePath)
     {
@@ -232,17 +238,16 @@ public abstract class AbstractWebDavAction<T> extends AbstractAction
     }
 
     /**
-     * Sardine needs encoded urls, but returns decoded, odd, but this requires that we split the url, encode and put it
-     * back together. This routine does
+     * Encodes special characters in the given URL and returns the encoded URL.
      *
-     * @param path
-     *            the full url to sanitize
-     * @return an encoded path
-     * @throws MalformedURLException
-     * @throws URISyntaxException
+     * @param url
+     *            the absolute URL to sanitize
+     * @return the encoded URL
      */
     private String encodeUrl(final String url)
     {
+        // Sardine needs encoded URLs, but returns decoded ones. Odd, but this requires that we split the URL, encode
+        // it, and put it back together.
         try
         {
             final URL u = new URL(url);
@@ -259,10 +264,10 @@ public abstract class AbstractWebDavAction<T> extends AbstractAction
     }
 
     /**
-     * Sardine client shutdown and release (implicit given by WebdavContext's clean method) which must to be used at the
-     * end of your testcase
+     * Closes the underlying {@link Sardine} client and releases any resources held by it.
      *
      * @throws IOException
+     *             if anything goes wrong
      */
     public void releaseClient() throws IOException
     {
@@ -277,7 +282,7 @@ public abstract class AbstractWebDavAction<T> extends AbstractAction
     }
 
     /**
-     * Returns the last response code. Will return -1 if no execution has taken place so far.
+     * Returns the status code. Will return -1 if no execution has taken place so far.
      *
      * @return the response code, -1 if no execution has taken place
      */
@@ -287,10 +292,10 @@ public abstract class AbstractWebDavAction<T> extends AbstractAction
     }
 
     /**
-     * Sets http response code to this action Used by WebdavContext to log responds
+     * Sets the status code
      *
      * @param statusCode
-     *            Responded http response code
+     *            the HTTP status code
      */
     public void setStatusCode(final int statusCode)
     {
@@ -330,9 +335,11 @@ public abstract class AbstractWebDavAction<T> extends AbstractAction
 
     /**
      * Sets thrown exception message to this action Used by WebdavContext to log exceptions while executing the action
+     * <p>
+     * Called automatically by the framework.
      *
      * @param exception
-     *            Thrown exception message
+     *            the exception if one was thrown at all
      */
     public void setException(final Exception exception)
     {

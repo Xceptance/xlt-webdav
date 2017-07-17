@@ -4,71 +4,76 @@ import org.junit.Assert;
 
 import com.github.sardine.DavResource;
 import com.xceptance.xlt.webdav.impl.AbstractWebDavAction;
-import com.xceptance.xlt.webdav.validators.StatusCodeValidator;
-import com.xceptance.xlt.webdav.validators.WebDavActionValidator;
+import com.xceptance.xlt.webdav.util.WebDavValidationUtils;
 
 /**
- * Checks if a resources path exists by using WebDAV <code>HEAD</code> by sardine.exists. Can be used by relative path
- * or by a resource object provided by previously performed ListResources actions to verify an expectation.
+ * Checks if a file or directory exists on a WebDAV server using the HEAD request method.
+ * <p>
+ * The resource in question can be specified either as path (relative to the WebDAV base directory as configured in
+ * {@link WebDavConnect}) or as a {@link DavResource} object, which can be obtained from the results of a
+ * {@link WebDavList} action.
+ * <p>
+ * The default action name in the test results will be "{@literal WebDavExists}". Use {@link #timerName(String)} to
+ * specify a different name.
  *
  * @author Karsten Sommer (Xceptance Software Technologies GmbH)
  */
 public class WebDavExists extends AbstractWebDavAction<WebDavExists>
 {
     /**
-     * Expectation of resources existence
-     */
-    private final boolean exists;
-
-    /**
-     * Verification of path validity
-     */
-    private boolean doesExist = false;
-
-    /**
-     * the path to check
+     * The URL of the resource to be checked.
      */
     private final String url;
+
+    /**
+     * Whether the resource is expected to exist.
+     */
+    private final boolean shouldExist;
+
+    /**
+     * Whether the resource indeed exists.
+     */
+    private boolean doesExist;
 
     /**
      * Action with standard action name listed in the results, based on a path
      *
      * @param relativePath
-     *            Resources relative source path related to your webdav directory
-     * @param exists
-     *            Expected state of resources existence
+     *            the resource path relative to your WebDAV base directory
+     * @param shouldExist
+     *            whether the resource is expected to exist
      */
-    public WebDavExists(final String relativePath, final boolean exists)
+    public WebDavExists(final String relativePath, final boolean shouldExist)
     {
         super();
 
-        this.exists = exists;
         url = getUrl(relativePath);
+        this.shouldExist = shouldExist;
     }
 
     /**
      * Action with standard action name listed in the results, based on a resource object
      *
-     * @param src
+     * @param davResource
      *            Source DavResource object to perform this action
-     * @param exists
-     *            Expected state of resources existence
+     * @param shouldExist
+     *            whether the resource is expected to exist
      */
-    public WebDavExists(final DavResource src, final boolean exists)
+    public WebDavExists(final DavResource davResource, final boolean shouldExist)
     {
         super();
 
-        this.exists = exists;
-        url = getUrl(src);
+        url = getUrl(davResource);
+        this.shouldExist = shouldExist;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void preValidate() throws Exception
+    public void preValidate()
     {
-        WebDavActionValidator.validate(this);
+        WebDavValidationUtils.validateAction(this);
     }
 
     /**
@@ -77,7 +82,6 @@ public class WebDavExists extends AbstractWebDavAction<WebDavExists>
     @Override
     protected void execute() throws Exception
     {
-        // Responds http 404 in case of a non existing resource without SardineException
         doesExist = getSardine().exists(url);
     }
 
@@ -85,13 +89,15 @@ public class WebDavExists extends AbstractWebDavAction<WebDavExists>
      * {@inheritDoc}
      */
     @Override
-    protected void postValidate() throws Exception
+    protected void postValidate()
     {
-        // Verify: check operation succeeded -> 200, 404
-        StatusCodeValidator.validate(getStatusCode(), exists ? 200 : 404);
+        // check status code
+        // - 200: resource exists
+        // - 404: resource does not exist
+        WebDavValidationUtils.validateStatusCode(getStatusCode(), shouldExist ? 200 : 404);
 
-        // Verify: Resource expectations
-        if (exists)
+        // check expectations
+        if (shouldExist)
         {
             Assert.assertTrue("The resource does not exist", doesExist);
         }

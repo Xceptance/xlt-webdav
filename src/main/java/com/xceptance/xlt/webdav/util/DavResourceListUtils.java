@@ -7,18 +7,20 @@ import com.github.sardine.DavResource;
 import com.xceptance.xlt.api.util.XltRandom;
 
 /**
- * Utility to get specific results out of a List of DavResources.
+ * Utility class to filter a list of {@link DavResource} objects according various criteria.
  *
  * @author Karsten Sommer (Xceptance Software Technologies GmbH)
  */
 public abstract class DavResourceListUtils
 {
     /**
+     * Filters the given list of {@link DavResource} objects and returns only those resources that denote files.
+     *
      * @param davResources
-     *            List of DavResources with results of a performed ListAction or selection
-     * @return List of all files contained inside the source list
+     *            the list of resources to filter
+     * @return a list of all file resources in the input list
      */
-    public static List<DavResource> getAllFiles(final List<DavResource> davResources)
+    public static List<DavResource> getAllFileResources(final List<DavResource> davResources)
     {
         final List<DavResource> results = new ArrayList<DavResource>();
 
@@ -37,13 +39,16 @@ public abstract class DavResourceListUtils
     }
 
     /**
+     * Filters the given list of {@link DavResource} objects and returns only those resources that denote files and end
+     * with a certain suffix.
+     *
      * @param davResources
-     *            List of DavResources with results of a performed ListAction or selection
-     * @param endingPhrase
+     *            the list of resources to filter
+     * @param suffix
      *            Phrase of a name ending to perform the selection
      * @return List of all files matching the phrase at its end
      */
-    public static List<DavResource> getFilesByEnding(final List<DavResource> davResources, final String endingPhrase)
+    public static List<DavResource> getFilesByEnding(final List<DavResource> davResources, final String suffix)
     {
         final List<DavResource> results = new ArrayList<DavResource>();
 
@@ -51,7 +56,7 @@ public abstract class DavResourceListUtils
         {
             for (final DavResource resource : davResources)
             {
-                if (resource.getName().toLowerCase().endsWith(endingPhrase.toLowerCase()) && !resource.isDirectory())
+                if (!resource.isDirectory() && resource.getName().toLowerCase().endsWith(suffix.toLowerCase()))
                 {
                     results.add(resource);
                 }
@@ -62,9 +67,11 @@ public abstract class DavResourceListUtils
     }
 
     /**
+     * Filters the given list of {@link DavResource} objects and returns only those resources that denote directories.
+     *
      * @param davResources
-     *            List of DavResources with results of a performed ListAction or selection
-     * @return List of all directories contained inside the list
+     *            the list of resources to filter
+     * @return a list of all directory resources in the input list
      */
     public static List<DavResource> getAllDirectories(final List<DavResource> davResources)
     {
@@ -85,8 +92,11 @@ public abstract class DavResourceListUtils
     }
 
     /**
+     * Filters the given list of {@link DavResource} objects and returns only those resources that denote files and end
+     * with a certain suffix.
+     *
      * @param davResources
-     *            List of DavResources with results of a performed ListAction or selection
+     *            the list of resources to filter
      * @param contentType
      *            HTTP content type to perform a selection
      * @return List of all files matching with the content type
@@ -111,7 +121,7 @@ public abstract class DavResourceListUtils
 
     /**
      * @param davResources
-     *            List of DavResources with results of a performed ListAction or selection
+     *            the list of resources to filter
      * @param matchPhrase
      *            Phrase which must be included in the results names
      * @return List of all resources matching the phrase
@@ -136,7 +146,7 @@ public abstract class DavResourceListUtils
 
     /**
      * @param davResources
-     *            List of DavResources with results of a performed ListAction or selection
+     *            the list of resources to filter
      * @param matchPhrase
      *            Phrase of which must not be included in the results names
      * @return List of all resources not matching the phrase
@@ -161,12 +171,12 @@ public abstract class DavResourceListUtils
 
     /**
      * @param davResources
-     *            List of DavResources with results of a performed ListAction or selection
+     *            the list of resources to filter
      * @return Randomized result of the lists content
      */
     public static DavResource getRandom(final List<DavResource> davResources)
     {
-        if (davResources == null)
+        if (davResources == null || davResources.isEmpty())
         {
             return null;
         }

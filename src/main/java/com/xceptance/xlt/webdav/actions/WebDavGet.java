@@ -6,73 +6,77 @@ import org.apache.commons.io.IOUtils;
 
 import com.github.sardine.DavResource;
 import com.xceptance.xlt.webdav.impl.AbstractWebDavAction;
-import com.xceptance.xlt.webdav.validators.StatusCodeValidator;
-import com.xceptance.xlt.webdav.validators.WebDavActionValidator;
+import com.xceptance.xlt.webdav.util.WebDavValidationUtils;
 
 /**
- * Gets a file by using WebDAV <code>GET</code> by sardine.get. Can be used by relative path or by a resource object
- * provided by previously performed ListResources actions. Set the storage flag if you need the result for following
- * actions and release them by .releaseFile() if you do not need it anymore. Set the storage flag to false if you just
- * want to do a performance test.
+ * Downloads a file from a WebDAV server using the GET request method. The downloaded content can optionally be stored
+ * in memory for further inspection.
+ * <p>
+ * The resource in question can be specified either as path (relative to the WebDAV base directory as configured in
+ * {@link WebDavConnect}) or as a {@link DavResource} object, which can be obtained from the results of a
+ * {@link WebDavList} action.
+ * <p>
+ * The default action name in the test results will be "{@literal WebDavGet}". Use {@link #timerName(String)} to specify
+ * a different name.
  *
  * @author Karsten Sommer (Xceptance Software Technologies GmbH)
  */
 public class WebDavGet extends AbstractWebDavAction<WebDavGet>
 {
     /**
-     * the path to fetch
+     * The URL of the file to fetch.
      */
     private final String url;
 
     /**
-     * File (available after performed action if flag is set)
+     * Whether to store the content of the file to an internal buffer.
+     */
+    private final boolean storeContent;
+
+    /**
+     * The content of the file.
      */
     private byte[] fileContent;
 
     /**
-     * do we want to preserve the file content?
-     */
-    private final boolean store;
-
-    /**
      * Action with standard action name listed in the results, based on a path
      *
-     * @param path
-     *            Files relative source path related to your webdav directory
-     * @param store
+     * @param relativePath
+     *            the resource path relative to your WebDAV base directory
+     * @param storeContent
      *            do we want to store the fetched content, true if yes, false otherwise
      */
-    public WebDavGet(final String path, final boolean store)
+    public WebDavGet(final String relativePath, final boolean storeContent)
     {
         super();
 
-        url = getUrl(path);
-        this.store = store;
+        url = getUrl(relativePath);
+        this.storeContent = storeContent;
     }
 
     /**
      * Action with standard action name listed in the results, based on a resource object
      *
-     * @param src
+     * @param davResource
      *            Source DavResource object to perform this action
-     * @param store
-     *            do we want to store the fetched content, true if yes, false otherwise
+     * @param storeContent
+     *            whether to store the file content to an internal buffer
      */
-    public WebDavGet(final DavResource src, final boolean store)
+    public WebDavGet(final DavResource davResource, final boolean storeContent)
     {
         super();
 
-        url = getUrl(src);
-        this.store = store;
+        url = getUrl(davResource);
+        this.storeContent = storeContent;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void preValidate() throws Exception
+    public void preValidate()
     {
-        WebDavActionValidator.validate(this);
+        WebDavValidationUtils.validateAction(this);
     }
 
     /**
@@ -83,7 +87,7 @@ public class WebDavGet extends AbstractWebDavAction<WebDavGet>
     {
         try (final InputStream is = getSardine().get(url))
         {
-            if (store)
+            if (storeContent)
             {
                 fileContent = IOUtils.toByteArray(is);
             }
@@ -104,19 +108,27 @@ public class WebDavGet extends AbstractWebDavAction<WebDavGet>
      * {@inheritDoc}
      */
     @Override
-    protected void postValidate() throws Exception
+    protected void postValidate()
     {
-        // Verify: Get operation succeeded -> 200
-        StatusCodeValidator.validate(getStatusCode(), 200);
+        // check status code -> 200
+        WebDavValidationUtils.validateStatusCode(getStatusCode(), 200);
     }
 
     /**
-     * Returns the result file as a byteArray
+     * Returns the content of the requested file.
      *
-     * @return the read file content
+     * @return the file content
      */
     public byte[] getFileContent()
     {
         return fileContent;
+    }
+
+    /**
+     * Clears the stored file content. Call this method when you are done with inspecting the file content.
+     */
+    public void clearFileContent()
+    {
+        fileContent = null;
     }
 }
