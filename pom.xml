@@ -6,7 +6,7 @@
 
     <groupId>com.xceptance</groupId>
     <artifactId>xlt-webdav</artifactId>
-    <version>0.0.1</version>
+    <version>1.0.0</version>
 
     <name>xlt-webdav</name>
     <description>A library based on XLT to test WebDAV servers.</description>
@@ -28,7 +28,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.5.1</version>
+                <version>3.6.1</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
@@ -53,7 +53,7 @@
     <repositories>
         <repository>
             <id>xceptance-releases</id>
-            <url>https://lab.xceptance.de/nexus/content/groups/public</url>
+            <url>https://lab.xceptance.de/nexus/content/repositories/releases/</url>
         </repository>
     </repositories>
 
