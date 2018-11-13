@@ -20,6 +20,7 @@ import com.xceptance.xlt.api.engine.RequestData;
 import com.xceptance.xlt.api.engine.Session;
 import com.xceptance.xlt.engine.RequestExecutionContext;
 import com.xceptance.xlt.engine.socket.SocketStatistics;
+import com.xceptance.xlt.engine.socket.XltSockets;
 import com.xceptance.xlt.webdav.util.WebDavContext;
 
 /**
@@ -49,6 +50,9 @@ public class CloseableHttpClientWrapper extends CloseableHttpClient
         {
             throw new RuntimeException("Failed to access method", ex);
         }
+
+        // initialize the network instrumentation layer
+        XltSockets.initialize();
     }
 
     /**
@@ -108,8 +112,8 @@ public class CloseableHttpClientWrapper extends CloseableHttpClient
 
         try
         {
-            // reset the network instrumentation layer before executing the request
-            RequestExecutionContext.getCurrent().getSocketMonitor().reset();
+            // reset the request context (incl. network instrumentation and DNS layer) before executing the request
+            RequestExecutionContext.getCurrent().reset();
 
             // now invoke doExceute() reflectively
             final CloseableHttpResponse response = invokeDoExecute(target, request, context);
