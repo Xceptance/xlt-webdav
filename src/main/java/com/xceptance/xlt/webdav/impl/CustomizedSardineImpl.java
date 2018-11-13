@@ -20,7 +20,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.config.SocketConfig;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
@@ -224,7 +223,7 @@ public class CustomizedSardineImpl extends SardineImpl
             // set a trust manager that trusts anyone
             sslContext.init(null, new TrustManager[]
                 {
-                    new InsecureTrustManager()
+                  new InsecureTrustManager()
                 }, null);
 
             // create a host name verifier that accepts any host
