@@ -18,8 +18,8 @@ import org.apache.http.protocol.HttpContext;
 
 import com.xceptance.xlt.api.engine.RequestData;
 import com.xceptance.xlt.api.engine.Session;
-import com.xceptance.xlt.engine.util.socket.SocketStatistics;
-import com.xceptance.xlt.engine.util.socket.XltSockets;
+import com.xceptance.xlt.engine.RequestExecutionContext;
+import com.xceptance.xlt.engine.socket.SocketStatistics;
 import com.xceptance.xlt.webdav.util.WebDavContext;
 
 /**
@@ -109,7 +109,7 @@ public class CloseableHttpClientWrapper extends CloseableHttpClient
         try
         {
             // reset the network instrumentation layer before executing the request
-            XltSockets.getSocketMonitor().reset();
+            RequestExecutionContext.getCurrent().getSocketMonitor().reset();
 
             // now invoke doExceute() reflectively
             final CloseableHttpResponse response = invokeDoExecute(target, request, context);
@@ -167,7 +167,7 @@ public class CloseableHttpClientWrapper extends CloseableHttpClient
             requestData.setUrl(requestLine.getUri());
 
             // set network statistics
-            final SocketStatistics socketStatistics = XltSockets.getSocketMonitor().getSocketStatistics();
+            final SocketStatistics socketStatistics = RequestExecutionContext.getCurrent().getSocketMonitor().getSocketStatistics();
 
             requestData.setBytesSent(socketStatistics.getBytesSent());
             requestData.setBytesReceived(socketStatistics.getBytesReceived());

@@ -20,6 +20,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.config.SocketConfig;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
@@ -31,7 +32,8 @@ import com.github.sardine.Version;
 import com.github.sardine.impl.SardineImpl;
 import com.xceptance.xlt.api.util.XltException;
 import com.xceptance.xlt.api.util.XltProperties;
-import com.xceptance.xlt.engine.XltDnsResolver;
+import com.xceptance.xlt.engine.dns.XltDnsResolver;
+import com.xceptance.xlt.engine.htmlunit.apache.XltDnsResolverAdapterForApache;
 
 /**
  * A sub class of {@link SardineImpl} that additionally logs the details of any HTTP request performed.
@@ -147,7 +149,7 @@ public class CustomizedSardineImpl extends SardineImpl
         final HttpClientBuilder builder = super.configure(selector, credentials);
 
         // now additionally set a custom DNS resolver to get DNS resolution times
-        builder.setDnsResolver(new XltDnsResolver());
+        builder.setDnsResolver(new XltDnsResolverAdapterForApache(new XltDnsResolver()));
 
         // configure a decent user agent name
         builder.setUserAgent(MessageFormat.format("Sardine/{0} (Xceptance Load Test, XLT {1}, WebDAV)",
